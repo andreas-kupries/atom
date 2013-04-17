@@ -31,12 +31,17 @@ oo::class create atom {
     # query set of interned strings.
     method names {} { my APIerror names }
 
+    # exists: string -> boolean
+    # query if string is known/interned
+    method exists {string} { my APIerror exists }
+
     # size () -> integer
     method size {} { my APIerror size }
 
     # map: string, integer -> ()
     # intern the string, force the associated identifier.
     # throws error on conflict with existing string/identifier.
+    # returns id.
     method map {string id} { my APIerror map }
 
     # clear () -> ()
