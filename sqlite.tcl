@@ -80,6 +80,7 @@ oo::class create atom::sqlite {
 		return {*}$o $e
 	    }
 	}
+	return $id
     }
 
     # clear () -> ()
