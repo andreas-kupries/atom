@@ -56,6 +56,10 @@ oo::class create atom::memory {
     # query set of interned strings.
     method names {} { dict keys $myid }
 
+    # exists: string -> boolean
+    # query if string is known/interned
+    method exists {string} { dict exists $myid $string }
+
     # size () -> integer
     method size {} { dict size }
 
@@ -76,7 +80,7 @@ oo::class create atom::memory {
 
 	dict set myid     $string $id
 	dict set mystring $id $string
-	return
+	return $id
     }
 
     # clear () -> ()
