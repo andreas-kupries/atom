@@ -17,27 +17,27 @@ test atom-sqlite-1.0 {new, wrong#args, not enough} -body {
     atom::sqlite new
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.0 {new, wrong#args, not enough} -body {
+test atom-sqlite-1.1 {new, wrong#args, not enough} -body {
     atom::sqlite new D
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.1 {new, wrong#args, too many} -body {
+test atom-sqlite-1.2 {new, wrong#args, too many} -body {
     atom::sqlite new D T X
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.2 {create, wrong#args, not enough} -body {
+test atom-sqlite-1.3 {create, wrong#args, not enough} -body {
     atom::sqlite create foo
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.3 {create, wrong#args, not enough} -body {
+test atom-sqlite-1.4 {create, wrong#args, not enough} -body {
     atom::sqlite create foo D
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.4 {create, wrong#args, too many} -body {
+test atom-sqlite-1.5 {create, wrong#args, too many} -body {
     atom::sqlite create foo D T X
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.5 {constructor, create, existing command} -setup {
+test atom-sqlite-1.6 {constructor, create, existing command} -setup {
     sqlite3 DB :memory:
     atom::sqlite create myasqlite DB foo
 } -body {
@@ -47,7 +47,7 @@ test atom-sqlite-1.5 {constructor, create, existing command} -setup {
     DB close
 } -returnCodes error -result [already myasqlite]
 
-test atom-sqlite-1.6 {constructor, create, existing command} -setup {
+test atom-sqlite-1.7 {constructor, create, existing command} -setup {
     sqlite3 DB :memory:
 } -body {
     atom::sqlite create set DB foo
@@ -55,7 +55,7 @@ test atom-sqlite-1.6 {constructor, create, existing command} -setup {
     DB close
 } -returnCodes error -result [already set]
 
-test atom-sqlite-1.6 {constructor, create} -setup {
+test atom-sqlite-1.8 {constructor, create} -setup {
     set result {}
     sqlite3 DB :memory:
 } -body {
@@ -68,7 +68,7 @@ test atom-sqlite-1.6 {constructor, create} -setup {
     unset result
 } -result {::myasqlite ::myasqlite 0}
 
-test atom-sqlite-1.7 {constructor, new} -setup {
+test atom-sqlite-1.9 {constructor, new} -setup {
     set result {}
     sqlite3 DB :memory:
 } -body {
