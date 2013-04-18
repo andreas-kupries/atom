@@ -74,4 +74,10 @@ test atom-cache-1.7 {constructor, new} -setup {
 } -match glob -result {::oo::Obj* ::oo::Obj* 0}
 
 # # ## ### ##### ######## ############# #####################
+
+## TODO: Tests exposing bad cache implementations not taking into
+##       account that the cache holds only a subset of the backend's
+##       data.
+
+# # ## ### ##### ######## ############# #####################
 return
