@@ -37,6 +37,24 @@ proc release-store {} {
 # n counting from 1.
 proc nth {x} { return $x }
 
+# identification to put into names of shared test cases.
+proc who {} { return sqlite }
+
+# # ## ### ##### ######## ############# #####################
+## Custom result of test cases in atom.testsuite affected by
+## generation-order of ids.
+
+# deserialize-[12].6
+proc deserX6char {} { return A }
+
+# map-1.5, merge-[12].6
+# sqlite autoincrement - simply starting from max(id).
+# no filling in of holes in the existing map.
+# myatom id s ; # nominal 6
+# myatom id a ; # nominal 7
+# myatom id g ; # nominal 8
+proc map15 {} { return {A 3 a 7 g 8 L 1 S 5 s 6} }
+
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 

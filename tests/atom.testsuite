@@ -35,7 +35,7 @@
 # # ## ### ##### ######## ############# #####################
 ## dispatch
 
-test atom-dispatch-1.0 {instance, no method} -setup {
+test atom::[who]-dispatch-1.0 {instance, no method} -setup {
     new-store
 } -body {
     myatom
@@ -44,7 +44,7 @@ test atom-dispatch-1.0 {instance, no method} -setup {
 } -returnCodes error \
     -result {wrong # args: should be "myatom method ?arg ...?"}
 
-test atom-dispatch-1.1 {instance, bad method name} -setup {
+test atom::[who]-dispatch-1.1 {instance, bad method name} -setup {
     new-store
 } -body {
     myatom foo
@@ -56,7 +56,7 @@ test atom-dispatch-1.1 {instance, bad method name} -setup {
 # # ## ### ##### ######## ############# #####################
 ## destructor
 
-test atom-destroy-1.0 {destroy, wrong#args, too many} -setup {
+test atom::[who]-destroy-1.0 {destroy, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom destroy X
@@ -64,7 +64,7 @@ test atom-destroy-1.0 {destroy, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom destroy"}
 
-test atom-destroy-1.1 {destroy} -setup {
+test atom::[who]-destroy-1.1 {destroy} -setup {
     new-store
 } -body {
     release-store
@@ -74,7 +74,7 @@ test atom-destroy-1.1 {destroy} -setup {
 # # ## ### ##### ######## ############# #####################
 ## clear
 
-test atom-clear-1.0 {clear, wrong#args, too many} -setup {
+test atom::[who]-clear-1.0 {clear, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom clear S
@@ -82,7 +82,7 @@ test atom-clear-1.0 {clear, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom clear"}
 
-test atom-clear-1.1 {clear, none} -setup {
+test atom::[who]-clear-1.1 {clear, none} -setup {
     new-store
 } -body {
     list [myatom size] [myatom clear] [myatom size]
@@ -90,7 +90,7 @@ test atom-clear-1.1 {clear, none} -setup {
     release-store
 } -result {0 {} 0}
 
-test atom-clear-1.2 {clear, some} -setup {
+test atom::[who]-clear-1.2 {clear, some} -setup {
     new-store
     myatom id S
     myatom id A
@@ -105,7 +105,7 @@ test atom-clear-1.2 {clear, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## deserialize, <--
 
-test atom-deserialize-1.0 {deserialize, wrong#args, not enough} -setup {
+test atom::[who]-deserialize-1.0 {deserialize, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom deserialize
@@ -113,7 +113,7 @@ test atom-deserialize-1.0 {deserialize, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom deserialize serial"}
 
-test atom-deserialize-1.1 {deserialize, wrong#args, too many} -setup {
+test atom::[who]-deserialize-1.1 {deserialize, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom deserialize S X
@@ -121,7 +121,7 @@ test atom-deserialize-1.1 {deserialize, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom deserialize serial"}
 
-test atom-deserialize-1.2 {deserialize, nothing over empty} -setup {
+test atom::[who]-deserialize-1.2 {deserialize, nothing over empty} -setup {
     new-store
 } -body {
     myatom deserialize {}
@@ -130,7 +130,7 @@ test atom-deserialize-1.2 {deserialize, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-deserialize-1.3 {deserialize, some over empty} -setup {
+test atom::[who]-deserialize-1.3 {deserialize, some over empty} -setup {
     new-store
 } -body {
     myatom deserialize {s 1 a 4 g 6}
@@ -139,7 +139,7 @@ test atom-deserialize-1.3 {deserialize, some over empty} -setup {
     release-store
 } -result {a 4 g 6 s 1}
 
-test atom-deserialize-1.4 {deserialize, nothing over some} -setup {
+test atom::[who]-deserialize-1.4 {deserialize, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -151,7 +151,7 @@ test atom-deserialize-1.4 {deserialize, nothing over some} -setup {
     release-store
 } -result [list A [nth 1] L [nth 3] S [nth 2]]
 
-test atom-deserialize-1.5 {deserialize, some over some} -setup {
+test atom::[who]-deserialize-1.5 {deserialize, some over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -163,7 +163,7 @@ test atom-deserialize-1.5 {deserialize, some over some} -setup {
     release-store
 } -result [list A [nth 1] a 5 g 6 L [nth 3] S [nth 2] s 4]
 
-test atom-deserialize-1.6 {deserialize, some over some, conflicts} -setup {
+test atom::[who]-deserialize-1.6 {deserialize, some over some, conflicts} -setup {
     new-store
     myatom id A ; # 0
     myatom id S ; # 1, conflict 's'.
@@ -173,9 +173,9 @@ test atom-deserialize-1.6 {deserialize, some over some, conflicts} -setup {
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -returnCodes error -result {Id conflict for "1", maps to "S" != "s"}
+} -returnCodes error -result "Id conflict for \"1\", maps to \"[deserX6char]\" != \"s\""
 
-test atom-deserialize-1.7 {deserialize, some over some, conflicts} -setup {
+test atom::[who]-deserialize-1.7 {deserialize, some over some, conflicts} -setup {
     new-store
     myatom id A
     myatom id S ; # conflict, id mismatch
@@ -187,7 +187,7 @@ test atom-deserialize-1.7 {deserialize, some over some, conflicts} -setup {
     release-store
 } -returnCodes error -result "String conflict for \"S\", maps to \"[nth 2]\" != \"7\""
 
-test atom-deserialize-2.0 {<--, wrong#args, not enough} -setup {
+test atom::[who]-deserialize-2.0 {<--, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom <--
@@ -195,7 +195,7 @@ test atom-deserialize-2.0 {<--, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom <-- serial"}
 
-test atom-deserialize-2.1 {<--, wrong#args, too many} -setup {
+test atom::[who]-deserialize-2.1 {<--, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom <-- S X
@@ -203,7 +203,7 @@ test atom-deserialize-2.1 {<--, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom <-- serial"}
 
-test atom-deserialize-2.2 {<--, nothing over empty} -setup {
+test atom::[who]-deserialize-2.2 {<--, nothing over empty} -setup {
     new-store
 } -body {
     myatom <-- {}
@@ -212,7 +212,7 @@ test atom-deserialize-2.2 {<--, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-deserialize-2.3 {<--, some over empty} -setup {
+test atom::[who]-deserialize-2.3 {<--, some over empty} -setup {
     new-store
 } -body {
     myatom <-- {s 1 a 4 g 6}
@@ -221,7 +221,7 @@ test atom-deserialize-2.3 {<--, some over empty} -setup {
     release-store
 } -result {a 4 g 6 s 1}
 
-test atom-deserialize-2.4 {<--, nothing over some} -setup {
+test atom::[who]-deserialize-2.4 {<--, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -233,7 +233,7 @@ test atom-deserialize-2.4 {<--, nothing over some} -setup {
     release-store
 } -result [list A [nth 1] L [nth 3] S [nth 2]]
 
-test atom-deserialize-2.5 {<--, some over some} -setup {
+test atom::[who]-deserialize-2.5 {<--, some over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -245,7 +245,7 @@ test atom-deserialize-2.5 {<--, some over some} -setup {
     release-store
 } -result [list A [nth 1] a 4 g 6 L [nth 3] S [nth 2] s 5]
 
-test atom-deserialize-2.6 {<--, some over some, conflicts} -setup {
+test atom::[who]-deserialize-2.6 {<--, some over some, conflicts} -setup {
     new-store
     myatom id A ; # 0
     myatom id S ; # 1, conflict 's'.
@@ -255,9 +255,9 @@ test atom-deserialize-2.6 {<--, some over some, conflicts} -setup {
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -returnCodes error -result {Id conflict for "1", maps to "S" != "s"}
+} -returnCodes error -result "Id conflict for \"1\", maps to \"[deserX6char]\" != \"s\""
 
-test atom-deserialize-2.7 {<--, some over some, conflicts} -setup {
+test atom::[who]-deserialize-2.7 {<--, some over some, conflicts} -setup {
     new-store
     myatom id A ; #
     myatom id S ; # conflict, id mismatch
@@ -272,7 +272,7 @@ test atom-deserialize-2.7 {<--, some over some, conflicts} -setup {
 # # ## ### ##### ######## ############# #####################
 ## exists
 
-test atom-exists-1.0 {exists, wrong#args, not enough} -setup {
+test atom::[who]-exists-1.0 {exists, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom exists
@@ -280,7 +280,7 @@ test atom-exists-1.0 {exists, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom exists string"}
 
-test atom-exists-1.1 {exists, wrong#args, too many} -setup {
+test atom::[who]-exists-1.1 {exists, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom exists S X
@@ -288,7 +288,7 @@ test atom-exists-1.1 {exists, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom exists string"}
 
-test atom-exists-1.2 {exists, no} -setup {
+test atom::[who]-exists-1.2 {exists, no} -setup {
     new-store
 } -body {
     myatom exists S
@@ -296,7 +296,7 @@ test atom-exists-1.2 {exists, no} -setup {
     release-store
 } -result 0
 
-test atom-exists-1.3 {exists, yes} -setup {
+test atom::[who]-exists-1.3 {exists, yes} -setup {
     new-store
     myatom id S
 } -body {
@@ -308,7 +308,7 @@ test atom-exists-1.3 {exists, yes} -setup {
 # # ## ### ##### ######## ############# #####################
 ## id
 
-test atom-id-1.0 {id, wrong#args, not enough} -setup {
+test atom::[who]-id-1.0 {id, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom id
@@ -316,7 +316,7 @@ test atom-id-1.0 {id, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom id string"}
 
-test atom-id-1.1 {id, wrong#args, too many} -setup {
+test atom::[who]-id-1.1 {id, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom id S X
@@ -324,7 +324,7 @@ test atom-id-1.1 {id, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom id string"}
 
-test atom-id-1.2 {id} -setup {
+test atom::[who]-id-1.2 {id} -setup {
     new-store
 } -body {
     myatom id S
@@ -332,7 +332,7 @@ test atom-id-1.2 {id} -setup {
     release-store
 } -result [nth 1]
 
-test atom-id-1.3 {id, duplicates have same id} -setup {
+test atom::[who]-id-1.3 {id, duplicates have same id} -setup {
     new-store
 } -body {
     list [myatom id S] [myatom id S]
@@ -340,7 +340,7 @@ test atom-id-1.3 {id, duplicates have same id} -setup {
     release-store
 } -result [list [nth 1] [nth 1]]
 
-test atom-id-1.4 {id, different strings, different ids} -setup {
+test atom::[who]-id-1.4 {id, different strings, different ids} -setup {
     new-store
 } -body {
     list [myatom id S] [myatom id S2]
@@ -348,24 +348,25 @@ test atom-id-1.4 {id, different strings, different ids} -setup {
     release-store
 } -result [list [nth 1] [nth 2]]
 
-test atom-map-1.5 {id, avoid conflicts} -setup {
+test atom::[who]-map-1.5 {id, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test merge-[12].6
     new-store
     myatom map A 3
     myatom map S 5
     myatom map L 1
 } -body {
-    myatom id s ; # nominal 3, avoid, go 4
-    myatom id a ; # nominal 4, avoid, avoid 5, go 6
-    myatom id g ; # nominal 5, avoid, avoid 6, go 7
+    myatom id s
+    myatom id a
+    myatom id g
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -result {A 3 a 6 g 7 L 1 S 5 s 4}
+} -result [map15]
 
 # # ## ### ##### ######## ############# #####################
 ## load
 
-test atom-load-1.0 {load, wrong#args, not enough} -setup {
+test atom::[who]-load-1.0 {load, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom load
@@ -373,7 +374,7 @@ test atom-load-1.0 {load, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom load serial"}
 
-test atom-load-1.1 {load, wrong#args, too many} -setup {
+test atom::[who]-load-1.1 {load, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom load S X
@@ -381,7 +382,7 @@ test atom-load-1.1 {load, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom load serial"}
 
-test atom-load-1.2 {load, nothing over empty} -setup {
+test atom::[who]-load-1.2 {load, nothing over empty} -setup {
     new-store
 } -body {
     myatom load {}
@@ -390,7 +391,7 @@ test atom-load-1.2 {load, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-load-1.3 {load, some over empty} -setup {
+test atom::[who]-load-1.3 {load, some over empty} -setup {
     new-store
 } -body {
     myatom load {s 1 a 4 g 6}
@@ -399,7 +400,7 @@ test atom-load-1.3 {load, some over empty} -setup {
     release-store
 } -result {a 4 g 6 s 1}
 
-test atom-load-1.4 {load, nothing over some} -setup {
+test atom::[who]-load-1.4 {load, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -411,7 +412,7 @@ test atom-load-1.4 {load, nothing over some} -setup {
     release-store
 } -result {}
 
-test atom-load-1.5 {load, some over some} -setup {
+test atom::[who]-load-1.5 {load, some over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -423,7 +424,7 @@ test atom-load-1.5 {load, some over some} -setup {
     release-store
 } -result {a 4 g 6 s 1}
 
-test atom-load-2.0 {:=, wrong#args, not enough} -setup {
+test atom::[who]-load-2.0 {:=, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom :=
@@ -431,7 +432,7 @@ test atom-load-2.0 {:=, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom := serial"}
 
-test atom-load-2.1 {:=, wrong#args, too many} -setup {
+test atom::[who]-load-2.1 {:=, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom := S X
@@ -439,7 +440,7 @@ test atom-load-2.1 {:=, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom := serial"}
 
-test atom-load-2.2 {:=, nothing over empty} -setup {
+test atom::[who]-load-2.2 {:=, nothing over empty} -setup {
     new-store
 } -body {
     myatom := {}
@@ -448,7 +449,7 @@ test atom-load-2.2 {:=, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-load-2.3 {:=, some over empty} -setup {
+test atom::[who]-load-2.3 {:=, some over empty} -setup {
     new-store
 } -body {
     myatom := {s 1 a 4 g 6}
@@ -457,7 +458,7 @@ test atom-load-2.3 {:=, some over empty} -setup {
     release-store
 } -result {a 4 g 6 s 1}
 
-test atom-load-2.4 {:=, nothing over some} -setup {
+test atom::[who]-load-2.4 {:=, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -469,7 +470,7 @@ test atom-load-2.4 {:=, nothing over some} -setup {
     release-store
 } -result {}
 
-test atom-load-2.5 {:=, some over some} -setup {
+test atom::[who]-load-2.5 {:=, some over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -484,7 +485,7 @@ test atom-load-2.5 {:=, some over some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## map
 
-test atom-map-1.0 {map, wrong#args, not enough} -setup {
+test atom::[who]-map-1.0 {map, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom map
@@ -492,7 +493,7 @@ test atom-map-1.0 {map, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom map string id"}
 
-test atom-map-1.1 {map, wrong#args, not enough} -setup {
+test atom::[who]-map-1.1 {map, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom map S
@@ -500,7 +501,7 @@ test atom-map-1.1 {map, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom map string id"}
 
-test atom-map-1.2 {map, wrong#args, too many} -setup {
+test atom::[who]-map-1.2 {map, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom map S I A
@@ -508,7 +509,7 @@ test atom-map-1.2 {map, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom map string id"}
 
-test atom-map-1.3 {map, string conflict} -setup {
+test atom::[who]-map-1.3 {map, string conflict} -setup {
     new-store
 } -body {
     myatom map S 0
@@ -517,7 +518,7 @@ test atom-map-1.3 {map, string conflict} -setup {
     release-store
 } -returnCodes error -result {String conflict for "S", maps to "0" != "1"}
 
-test atom-map-1.4 {map, id conflict} -setup {
+test atom::[who]-map-1.4 {map, id conflict} -setup {
     new-store
 } -body {
     myatom map S 0
@@ -526,7 +527,7 @@ test atom-map-1.4 {map, id conflict} -setup {
     release-store
 } -returnCodes error -result {Id conflict for "0", maps to "S" != "A"}
 
-test atom-map-1.5 {map, no conflict} -setup {
+test atom::[who]-map-1.5 {map, no conflict} -setup {
     new-store
 } -body {
     myatom map S 22
@@ -535,7 +536,7 @@ test atom-map-1.5 {map, no conflict} -setup {
     release-store
 } -result 22
 
-test atom-map-1.6 {map} -setup {
+test atom::[who]-map-1.6 {map} -setup {
     new-store
 } -body {
     myatom map S 1
@@ -544,7 +545,7 @@ test atom-map-1.6 {map} -setup {
     release-store
 } -result {S 1}
 
-test atom-map-1.7 {map, multiple} -setup {
+test atom::[who]-map-1.7 {map, multiple} -setup {
     new-store
 } -body {
     myatom map S 1
@@ -559,7 +560,7 @@ test atom-map-1.7 {map, multiple} -setup {
 # # ## ### ##### ######## ############# #####################
 ## merge
 
-test atom-merge-1.0 {merge, wrong#args, not enough} -setup {
+test atom::[who]-merge-1.0 {merge, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom merge
@@ -567,7 +568,7 @@ test atom-merge-1.0 {merge, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom merge serial"}
 
-test atom-merge-1.1 {merge, wrong#args, too many} -setup {
+test atom::[who]-merge-1.1 {merge, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom merge S X
@@ -575,7 +576,7 @@ test atom-merge-1.1 {merge, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom merge serial"}
 
-test atom-merge-1.2 {merge, nothing over empty} -setup {
+test atom::[who]-merge-1.2 {merge, nothing over empty} -setup {
     new-store
 } -body {
     myatom merge {}
@@ -584,7 +585,7 @@ test atom-merge-1.2 {merge, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-merge-1.3 {merge, some over empty} -setup {
+test atom::[who]-merge-1.3 {merge, some over empty} -setup {
     new-store
 } -body {
     myatom merge {s 1 a 4 g 6}
@@ -593,7 +594,7 @@ test atom-merge-1.3 {merge, some over empty} -setup {
     release-store
 } -result [list a [nth 2] g [nth 3] s [nth 1]]
 
-test atom-merge-1.4 {merge, nothing over some} -setup {
+test atom::[who]-merge-1.4 {merge, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -605,19 +606,20 @@ test atom-merge-1.4 {merge, nothing over some} -setup {
     release-store
 } -result [list A [nth 1] L [nth 3] S [nth 2]]
 
-test atom-merge-1.5 {merge, some over some} -setup {
+test atom::[who]-merge-1.5 {merge, some over some} -setup {
     new-store
-    myatom id A ; # 0
-    myatom id S ; # 1
-    myatom id L ; # 2
+    myatom id A
+    myatom id S
+    myatom id L
 } -body {
     myatom merge {s 1 a 4 g 6}
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -result [list A [nth 1] a 4 g 5 L [nth 3] S [nth 2] s 3]
+} -result [list A [nth 1] a [nth 5] g [nth 6] L [nth 3] S [nth 2] s [nth 4]]
 
-test atom-merge-1.6 {merge, some over some, avoid conflicts} -setup {
+test atom::[who]-merge-1.6 {merge, some over some, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test map-1.5
     new-store
     myatom load {A 3 S 5 L 1}
 } -body {
@@ -625,9 +627,9 @@ test atom-merge-1.6 {merge, some over some, avoid conflicts} -setup {
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -result {A 3 a 6 g 7 L 1 S 5 s 4}
+} -result [map15]
 
-test atom-merge-2.0 {+=, wrong#args, not enough} -setup {
+test atom::[who]-merge-2.0 {+=, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom +=
@@ -635,7 +637,7 @@ test atom-merge-2.0 {+=, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom += serial"}
 
-test atom-merge-2.1 {+=, wrong#args, too many} -setup {
+test atom::[who]-merge-2.1 {+=, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom += S X
@@ -643,7 +645,7 @@ test atom-merge-2.1 {+=, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom += serial"}
 
-test atom-merge-2.2 {+=, nothing over empty} -setup {
+test atom::[who]-merge-2.2 {+=, nothing over empty} -setup {
     new-store
 } -body {
     myatom += {}
@@ -652,7 +654,7 @@ test atom-merge-2.2 {+=, nothing over empty} -setup {
     release-store
 } -result {}
 
-test atom-merge-2.3 {+=, some over empty} -setup {
+test atom::[who]-merge-2.3 {+=, some over empty} -setup {
     new-store
 } -body {
     myatom += {s 1 a 4 g 6}
@@ -661,7 +663,7 @@ test atom-merge-2.3 {+=, some over empty} -setup {
     release-store
 } -result [list a [nth 2] g [nth 3] s [nth 1]]
 
-test atom-merge-2.4 {+=, nothing over some} -setup {
+test atom::[who]-merge-2.4 {+=, nothing over some} -setup {
     new-store
     myatom id A
     myatom id S
@@ -673,7 +675,7 @@ test atom-merge-2.4 {+=, nothing over some} -setup {
     release-store
 } -result [list A [nth 1] L [nth 3] S [nth 2]]
 
-test atom-merge-2.5 {+=, some over some} -setup {
+test atom::[who]-merge-2.5 {+=, some over some} -setup {
     new-store
     myatom id A ; # 0
     myatom id S ; # 1
@@ -683,9 +685,10 @@ test atom-merge-2.5 {+=, some over some} -setup {
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -result {A 0 a 4 g 5 L 2 S 1 s 3}
+} -result [list A [nth 1] a [nth 5] g [nth 6] L [nth 3] S [nth 2] s [nth 4]]
 
-test atom-merge-2.6 {+=, some over some, avoid conflicts} -setup {
+test atom::[who]-merge-2.6 {+=, some over some, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test map-1.5
     new-store
     myatom load {A 3 S 5 L 1}
 } -body {
@@ -693,12 +696,12 @@ test atom-merge-2.6 {+=, some over some, avoid conflicts} -setup {
     kt dictsort [myatom serialize]
 } -cleanup {
     release-store
-} -result {A 3 a 6 g 7 L 1 S 5 s 4}
+} -result [map15]
 
 # # ## ### ##### ######## ############# #####################
 ## names
 
-test atom-names-1.0 {names, wrong#args, too many} -setup {
+test atom::[who]-names-1.0 {names, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom names S
@@ -706,7 +709,7 @@ test atom-names-1.0 {names, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom names"}
 
-test atom-names-1.1 {names, none} -setup {
+test atom::[who]-names-1.1 {names, none} -setup {
     new-store
 } -body {
     myatom names
@@ -714,7 +717,7 @@ test atom-names-1.1 {names, none} -setup {
     release-store
 } -result {}
 
-test atom-names-1.2 {names, some} -setup {
+test atom::[who]-names-1.2 {names, some} -setup {
     new-store
     myatom id S
     myatom id A
@@ -729,7 +732,7 @@ test atom-names-1.2 {names, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## serialize, -->
 
-test atom-serialize-1.0 {serialize, wrong#args, too many} -setup {
+test atom::[who]-serialize-1.0 {serialize, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom serialize S
@@ -737,7 +740,7 @@ test atom-serialize-1.0 {serialize, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom serialize"}
 
-test atom-serialize-1.1 {serialize, none} -setup {
+test atom::[who]-serialize-1.1 {serialize, none} -setup {
     new-store
 } -body {
     myatom serialize
@@ -745,7 +748,7 @@ test atom-serialize-1.1 {serialize, none} -setup {
     release-store
 } -result {}
 
-test atom-serialize-1.2 {serialize, some} -setup {
+test atom::[who]-serialize-1.2 {serialize, some} -setup {
     new-store
     myatom id S
     myatom id A
@@ -757,7 +760,7 @@ test atom-serialize-1.2 {serialize, some} -setup {
     release-store
 } -result [list A [nth 2] C [nth 4] R [nth 3] S [nth 1]]
 
-test atom-serialize-2.0 {-->, wrong#args, too many} -setup {
+test atom::[who]-serialize-2.0 {-->, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom --> S
@@ -765,7 +768,7 @@ test atom-serialize-2.0 {-->, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom -->"}
 
-test atom-serialize-2.1 {-->, none} -setup {
+test atom::[who]-serialize-2.1 {-->, none} -setup {
     new-store
 } -body {
     myatom -->
@@ -773,7 +776,7 @@ test atom-serialize-2.1 {-->, none} -setup {
     release-store
 } -result {}
 
-test atom-serialize-2.2 {-->, some} -setup {
+test atom::[who]-serialize-2.2 {-->, some} -setup {
     new-store
     myatom id S
     myatom id A
@@ -788,7 +791,7 @@ test atom-serialize-2.2 {-->, some} -setup {
 # # ## ### ##### ######## ############# #####################
 ## size
 
-test atom-size-1.0 {size, wrong#args, too many} -setup {
+test atom::[who]-size-1.0 {size, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom size X
@@ -796,7 +799,7 @@ test atom-size-1.0 {size, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom size"}
 
-test atom-size-1.1 {size} -setup {
+test atom::[who]-size-1.1 {size} -setup {
     new-store
     myatom id A
 } -body {
@@ -805,7 +808,7 @@ test atom-size-1.1 {size} -setup {
     release-store
 } -result 1
 
-test atom-size-1.2 {size} -setup {
+test atom::[who]-size-1.2 {size} -setup {
     new-store
     myatom id A
     myatom id B
@@ -818,7 +821,7 @@ test atom-size-1.2 {size} -setup {
 # # ## ### ##### ######## ############# #####################
 ## str
 
-test atom-str-1.0 {str, wrong#args, not enough} -setup {
+test atom::[who]-str-1.0 {str, wrong#args, not enough} -setup {
     new-store
 } -body {
     myatom str
@@ -826,7 +829,7 @@ test atom-str-1.0 {str, wrong#args, not enough} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom str id"}
 
-test atom-str-1.1 {str, wrong#args, too many} -setup {
+test atom::[who]-str-1.1 {str, wrong#args, too many} -setup {
     new-store
 } -body {
     myatom str S X
@@ -834,7 +837,7 @@ test atom-str-1.1 {str, wrong#args, too many} -setup {
     release-store
 } -returnCodes error -result {wrong # args: should be "myatom str id"}
 
-test atom-str-1.2 {str, unknown id} -setup {
+test atom::[who]-str-1.2 {str, unknown id} -setup {
     new-store
 } -body {
     myatom str 0
@@ -842,7 +845,7 @@ test atom-str-1.2 {str, unknown id} -setup {
     release-store
 } -returnCodes error -result {Expected string id, got "0"}
 
-test atom-str-1.3 {str, known} -setup {
+test atom::[who]-str-1.3 {str, known} -setup {
     new-store
     myatom id S
 } -body {
@@ -851,7 +854,7 @@ test atom-str-1.3 {str, known} -setup {
     release-store
 } -result S
 
-test atom-str-1.4 {str, known} -setup {
+test atom::[who]-str-1.4 {str, known} -setup {
     new-store
     myatom id S
     myatom id A
