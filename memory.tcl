@@ -73,12 +73,10 @@ oo::class create atom::memory {
 	# Check for conflicts with existing id or string.
 	if {[dict exists $myid $string] &&
 	    ([set knownid [dict get $myid $string]] != $id)} {
-	    my Error "String conflict for \"$string\", maps to $knownid != $id" \
-		MAP CONFLICT ID $string $id $knownid
+	    my MAPerror string $string $knownid $id
 	} elseif {[dict exists $mystring $id] &&
 		   ([set knownstr [dict get $mystring $id]] ne $string)} {
-	    my Error "Identifier conflict for \"$id\", maps to \"$knownstr\" != \"$string\"" \
-		MAP CONFLICT STRING $id $string $knownstr
+	    my MAPerror id $id $knownstr $string
 	}
 
 	dict set myid     $string $id

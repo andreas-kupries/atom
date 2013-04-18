@@ -7,8 +7,8 @@
 ## have to be provided by the invoking implementation-specific
 ## testsuite.
 #
-## The external procedure 'new' is used to create an instance of the
-## store under test.
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy aqn instance of the store under test.
 
 # # ## ### ##### ######## ############# #####################
 
