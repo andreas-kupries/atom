@@ -1,4 +1,5 @@
 # -*- tcl -*-
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## Base class for atom storage i.e. string internement.
 ##

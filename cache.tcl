@@ -1,4 +1,5 @@
 # -*- tcl -*-
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## Cache storage. Internally uses in-memory store.
 ## Backend store is configurable at construction time).

@@ -1,4 +1,5 @@
 ## -*- tcl -*-
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 
 ## A number of shared test cases have different results, based on the

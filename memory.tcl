@@ -1,4 +1,5 @@
 # -*- tcl -*-
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## In-memory atom storage i.e. string internement.
 
