@@ -1,7 +1,7 @@
 ## -*- tcl -*-
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## Test suite for sqlite stores, custom parts.
+## Test suite for cache stores, custom parts.
 #
 ## The external procedures 'already' and 'badmethod' are used to
 ## generate implementation specific error messages. Implementations
@@ -13,71 +13,63 @@
 
 # # ## ### ##### ######## ############# #####################
 
-test atom-sqlite-1.0 {new, wrong#args, not enough} -body {
-    atom::sqlite new
-} -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
+test atom-cache-1.0 {new, wrong#args, not enough} -body {
+    atom::cache new
+} -returnCodes error -result {wrong # args: should be "atom::cache new backend"}
 
-test atom-sqlite-1.0 {new, wrong#args, not enough} -body {
-    atom::sqlite new D
-} -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
+test atom-cache-1.1 {new, wrong#args, too many} -body {
+    atom::cache new B X
+} -returnCodes error -result {wrong # args: should be "atom::cache new backend"}
 
-test atom-sqlite-1.1 {new, wrong#args, too many} -body {
-    atom::sqlite new D T X
-} -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
+test atom-cache-1.2 {create, wrong#args, not enough} -body {
+    atom::cache create foo
+} -returnCodes error -result {wrong # args: should be "atom::cache create foo backend"}
 
-test atom-sqlite-1.2 {create, wrong#args, not enough} -body {
-    atom::sqlite create foo
-} -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
+test atom-cache-1.3 {create, wrong#args, too many} -body {
+    atom::cache create foo B X
+} -returnCodes error -result {wrong # args: should be "atom::cache create foo backend"}
 
-test atom-sqlite-1.3 {create, wrong#args, not enough} -body {
-    atom::sqlite create foo D
-} -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
-
-test atom-sqlite-1.4 {create, wrong#args, too many} -body {
-    atom::sqlite create foo D T X
-} -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
-
-test atom-sqlite-1.5 {constructor, create, existing command} -setup {
-    sqlite3 DB :memory:
-    atom::sqlite create myasqlite DB foo
+test atom-cache-1.4 {constructor, create, existing command} -setup {
+    atom::memory create X
+    atom::cache create myacache X
 } -body {
-    atom::sqlite create myasqlite DB foo
+    atom::cache create myacache X
 } -cleanup {
-    myasqlite destroy
-    DB close
-} -returnCodes error -result [already myasqlite]
+    myacache destroy
+    X destroy
+} -returnCodes error -result [already myacache]
 
-test atom-sqlite-1.6 {constructor, create, existing command} -setup {
-    sqlite3 DB :memory:
+test atom-cache-1.6 {constructor, create, existing command} -setup {
+    atom::memory create X
 } -body {
-    atom::sqlite create set DB foo
+    atom::cache create set X
 } -cleanup {
-    DB close
+    X destroy
 } -returnCodes error -result [already set]
 
-test atom-sqlite-1.6 {constructor, create} -setup {
+test atom-cache-1.6 {constructor, create} -setup {
     set result {}
-    sqlite3 DB :memory:
+    atom::memory create X
 } -body {
-    lappend result [atom::sqlite create myasqlite DB foo]
-    lappend result [info commands ::myasqlite]
-    lappend result [myasqlite size]
+    lappend result [atom::cache create myacache X]
+    lappend result [info commands ::myacache]
+    lappend result [myacache size]
 } -cleanup {
-    myasqlite destroy
-    DB close
+    myacache destroy
+    X destroy
     unset result
-} -result {::myasqlite ::myasqlite 0}
+} -result {::myacache ::myacache 0}
 
-test atom-sqlite-1.7 {constructor, new} -setup {
+test atom-cache-1.7 {constructor, new} -setup {
     set result {}
-    sqlite3 DB :memory:
+    atom::memory create X
 } -body {
-    lappend result [set foo [atom::sqlite new DB foo]]
+    lappend result [set foo [atom::cache new X]]
     lappend result [info commands ::$foo]
     lappend result [$foo size]
 } -cleanup {
     $foo destroy
-    DB close
+    X destroy
     unset result foo
 } -match glob -result {::oo::Obj* ::oo::Obj* 0}
 
