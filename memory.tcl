@@ -64,6 +64,10 @@ oo::class create atom::memory {
     # query if string is known/interned
     method exists {string} { dict exists $myid $string }
 
+    # exists-id: id -> boolean
+    # query if id is known/interned
+    method exists-id {id} { dict exists $mystring $id }
+
     # size () -> integer
     method size {} { dict size $myid }
 

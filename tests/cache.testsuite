@@ -39,7 +39,7 @@ test atom-cache-1.4 {constructor, create, existing command} -setup {
     X destroy
 } -returnCodes error -result [already myacache]
 
-test atom-cache-1.6 {constructor, create, existing command} -setup {
+test atom-cache-1.5 {constructor, create, existing command} -setup {
     atom::memory create X
 } -body {
     atom::cache create set X
@@ -72,6 +72,97 @@ test atom-cache-1.7 {constructor, new} -setup {
     X destroy
     unset result foo
 } -match glob -result {::oo::Obj* ::oo::Obj* 0}
+
+# # ## ### ##### ######## ############# #####################
+
+test atom-cache-1.8 {exists, authoritative backend} -setup {
+    new-store
+    mybackend id S
+    mybackend id A
+    mybackend id R
+    # cache doesn't know this.
+} -body {
+    myatom exists S
+} -cleanup {
+    release-store
+} -result 1
+
+test atom-cache-1.9 {names, authoritative backend} -setup {
+    new-store
+    mybackend id S
+    mybackend id A
+    mybackend id R
+    # cache doesn't know this.
+} -body {
+    lsort -dict [myatom names]
+} -cleanup {
+    release-store
+} -result {A R S}
+
+test atom-cache-1.10 {serialize, authoritative backend} -setup {
+    new-store
+    mybackend id S
+    mybackend id A
+    mybackend id R
+    # cache doesn't know this.
+} -body {
+    kt dictsort [myatom serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 2] R [nth 3] S [nth 1]]
+
+test atom-cache-1.11 {size, authoritative backend} -setup {
+    new-store
+    mybackend id S
+    mybackend id A
+    mybackend id R
+    # cache doesn't know this.
+} -body {
+    myatom size
+} -cleanup {
+    release-store
+} -result 3
+
+test atom-cache-1.12 {str, authoritative backend} -setup {
+    new-store
+    mybackend id S
+    mybackend id A
+    mybackend id R
+    # cache doesn't know this.
+} -body {
+    myatom str [nth 2]
+} -cleanup {
+    release-store
+} -result A
+
+# deserialize, load, merge
+
+test atom-cache-2.0 {deserialize visible in backend} -setup {
+    new-store
+    myatom deserialize {z 0 a 3}
+} -body {
+    kt dictsort [mybackend serialize]
+} -cleanup {
+    release-store
+} -result {a 3 z 0}
+
+test atom-cache-2.1 {load visible in backend} -setup {
+    new-store
+    myatom load {z 0 a 3}
+} -body {
+    kt dictsort [mybackend serialize]
+} -cleanup {
+    release-store
+} -result {a 3 z 0}
+
+test atom-cache-2.3 {merge visible in backend} -setup {
+    new-store
+    myatom merge {z 0 a 3}
+} -body {
+    kt dictsort [mybackend serialize]
+} -cleanup {
+    release-store
+} -result [list a [nth 2] z [nth 1]]
 
 # # ## ### ##### ######## ############# #####################
 return

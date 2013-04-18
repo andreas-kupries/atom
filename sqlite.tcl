@@ -83,6 +83,14 @@ oo::class create atom::sqlite {
 	}
     }
 
+    # exists-id: id -> boolean
+    # query if id is known/interned
+    method exists-id {id} {
+	DB transaction {
+	    DB onecolumn $sql_existsid
+	}
+    }
+
     # size () -> integer
     method size {} {
 	DB transaction {

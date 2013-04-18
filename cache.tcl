@@ -48,24 +48,50 @@ oo::class create atom::cache {
     }
 
     # str: integer -> string
-    # map numeric identifier back to its string
-    #method str {id} { CACHE str $id }
-    forward str CACHE str
-
+    # map numeric identifier back to its string.
+    # check cache first, then backend, lift mapping.
+    method str {id} {
+	if {![CACHE exists-id $id]} {
+	    # Using "map" here forces the mapping in cache to 
+	    # mirror the mapping by the backend.
+	    set string [BACKEND str $id]
+	    CACHE map $string $id
+	    return $string
+	} else {
+	    return [CACHE str $id]
+	}
+    }
 
     # names () -> list(string)
     # query set of interned strings.
-    #method names {} { CACHE names }
-    forward names CACHE names
+    # backend is authoritative source.
+    # cache may not know everything, yet.
+    #method names {} { BACKEND names }
+    forward names BACKEND names
 
     # exists: string -> boolean
     # query if string is known/interned
-    #method exists {string} { CACHE exists $string }
-    forward exists CACHE exists
+    # check cache first, then the authoritative source.
+    method exists {string} {
+	set has [CACHE exists $string]
+	if {$has} { return $has }
+	return [BACKEND exists $string]
+    }
+
+    # exists-id: id -> boolean
+    # query if id is known/interned
+    # check cache first, then the authoritative source.
+    method exists-id {id} {
+	set has [CACHE exists-id $id]
+	if {$has} { return $has }
+	return [BACKEND exists-id $id]
+    }
 
     # size () -> integer
-    #method size {} { CACHE size }
-    forward size CACHE size
+    # backend is authoritative source.
+    # cache may not know everything, yet.
+    #method size {} { BACKEND size }
+    forward size BACKEND size
 
     # map: string, integer -> ()
     # intern the string, force the associated identifier.
@@ -87,11 +113,12 @@ oo::class create atom::cache {
     }
 
     # # ## ### ##### ######## #############
+    ## Cache bypass.
 
-    forward serialize   CACHE serialize
-    forward deserialize CACHE deserialize
-    forward load        CACHE load
-    forward merge       CACHE merge
+    forward serialize   BACKEND serialize
+    forward deserialize BACKEND deserialize
+    forward load        BACKEND load
+    forward merge       BACKEND merge
 
     # # ## ### ##### ######## #############
 }
