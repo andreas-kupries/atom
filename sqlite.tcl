@@ -59,27 +59,35 @@ oo::class create atom::sqlite {
     # str: integer -> string
     # map numeric identifier back to its string
     method str {id} {
-	if {![DB onecolumn $sql_existsid]} {
-	    my Error "Expected string id, got \"$id\"" BAD ID $id
+	DB transaction {
+	    if {![DB onecolumn $sql_existsid]} {
+		my Error "Expected string id, got \"$id\"" BAD ID $id
+	    }
+	    return [DB onecolumn $sql_tostr]
 	}
-	return [DB onecolumn $sql_tostr]
     }
 
     # names () -> list(string)
     # query set of interned strings.
     method names {} {
-	return [DB eval $sql_names]
+	DB transaction {
+	    return [DB eval $sql_names]
+	}
     }
 
     # exists: string -> boolean
     # query if string is known/interned
     method exists {string} {
-	DB onecolumn $sql_exists
+	DB transaction {
+	    DB onecolumn $sql_exists
+	}
     }
 
     # size () -> integer
     method size {} {
-	return [DB eval $sql_size]
+	DB transaction {
+	    return [DB eval $sql_size]
+	}
     }
 
     # map: string, integer -> ()
@@ -115,7 +123,9 @@ oo::class create atom::sqlite {
     # clear () -> ()
     # Remove all known mappings.
     method clear {} {
-	DB eval $sql_clear
+	DB transaction {
+	    DB eval $sql_clear
+	}
 	return
     }
 
@@ -132,14 +142,16 @@ oo::class create atom::sqlite {
 	    AND   name = :table
 	}]]} {
 	    # Table missing. Create.
-	    DB eval [string map $map {
-		CREATE TABLE "<<table>>"
-		(  id     INTEGER PRIMARY KEY AUTOINCREMENT,
-		   string TEXT    NOT NULL UNIQUE
-		);
-		-- id and string have implied indices on them
-		-- as primary key and unique columns.
-	    }]
+	    DB transaction {
+		DB eval [string map $map {
+		    CREATE TABLE "<<table>>"
+		    (  id     INTEGER PRIMARY KEY AUTOINCREMENT,
+		       string TEXT    NOT NULL UNIQUE
+		       );
+		    -- id and string have implied indices on them
+		    -- as primary key and unique columns.
+		}]
+	    }
 	} else {
 	    # TODO: Find a way to check that the schema is as expected.
 	}
