@@ -1,4 +1,5 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## memory.test:  tests for the atom::memory package.
 
@@ -21,22 +22,15 @@ proc badmethod {m real} {
     return "unknown method \"$m\": must be $real"
 }
 
-proc new-store {} {
-    return [atom::memory create myatom]
-}
-
-proc release-store {} {
-    myatom destroy
-    return
-}
-
 # identification to put into names of shared test cases.
 proc who {} { return memory }
 
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
+kt source memory-setup.tcl
 kt source memory-idgen.tcl
+
 kt source memory.testsuite
 kt source atom.testsuite
 

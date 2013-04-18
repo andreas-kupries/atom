@@ -1,4 +1,5 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## sqlite.test:  tests for the atom::sqlite package.
 
@@ -22,24 +23,15 @@ proc badmethod {m real} {
     return "unknown method \"$m\": must be $real"
 }
 
-proc new-store {} {
-    sqlite3 mydb :memory:
-    return [atom::sqlite create myatom ::mydb atoms]
-}
-
-proc release-store {} {
-    catch { myatom destroy }
-    catch { mydb     close }
-    return
-}
-
 # identification to put into names of shared test cases.
 proc who {} { return sqlite }
 
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
+kt source sqlite-setup.tcl
 kt source sqlite-idgen.tcl
+
 kt source sqlite.testsuite
 kt source atom.testsuite
 

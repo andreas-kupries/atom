@@ -1,4 +1,5 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## cache.test:  tests for the atom::cache package.
 
@@ -22,26 +23,16 @@ proc badmethod {m real} {
     return "unknown method \"$m\": must be $real"
 }
 
-proc new-store {} {
-    set b [atom::memory create mybackend]
-    #set b ::foo
-    return [atom::cache create myatom $b]
-}
-
-proc release-store {} {
-    catch { myatom    destroy }
-    catch { mybackend destroy }
-    return
-}
-
 # identification to put into names of shared test cases.
 proc who {} { return cache }
 
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
+kt source cache-setup.tcl
 kt source memory-idgen.tcl ; # the code above uses memory as backend
-#kt source cache.testsuite
+
+kt source cache.testsuite
 kt source atom.testsuite
 
 # # ## ### ##### ######## ############# #####################
