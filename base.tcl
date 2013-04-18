@@ -10,7 +10,7 @@
 ## Requisites
 
 package require Tcl 8.5
-package require OO
+package require TclOO
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -52,10 +52,10 @@ oo::class create atom {
     ## API. Standard methods. Reimplementation possible
     ##      for efficiency. Plus alternate names.
 
-    forward <-- my deserialize
-    forward --> my serialize
-    forward :=  my load
-    forward +=  my merge
+    forward <-- my deserialize ; export <--
+    forward --> my serialize   ; export -->
+    forward :=  my load        ; export :=
+    forward +=  my merge       ; export +=
 
     # serialize: () -> dict (string -> identifier)
     method serialize {} {
@@ -95,7 +95,7 @@ oo::class create atom {
     ## Internal helpers
 
     method Error {text args} {
-	return -code error -errorcode [list ATOM {*}$args] $txt
+	return -code error -errorcode [list ATOM {*}$args] $text
     }
 
     method APIerror {api} {
