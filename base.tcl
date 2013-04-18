@@ -10,7 +10,7 @@
 ## Requisites
 
 package require Tcl 8.5
-package require OO
+package require TclOO
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation

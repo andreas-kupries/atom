@@ -1,0 +1,58 @@
+## -*- tcl -*-
+# # ## ### ##### ######## ############# #####################
+## Test suite for memory stores, custom parts.
+#
+## The external procedures 'already' and 'badmethod' are used to
+## generate implementation specific error messages. Implementations
+## have to be provided by the invoking implementation-specific
+## testsuite.
+#
+## The external procedure 'new' is used to create an instance of the
+## store under test.
+
+# # ## ### ##### ######## ############# #####################
+
+test atom-memory-1.0 {new, wrong#args, too many} -body {
+    atom::memory new X
+} -returnCodes error -result {wrong # args: should be "atom::memory new"}
+
+test atom-memory-1.1 {create, wrong#args, too many} -body {
+    atom::memory create foo X
+} -returnCodes error -result {wrong # args: should be "atom::memory create foo"}
+
+test atom-memory-1.2 {constructor, create, existing command} -setup {
+    atom::memory create myamem
+} -body {
+    atom::memory create myamem
+} -cleanup {
+    myamem destroy
+} -returnCodes error -result [already myamem]
+
+test atom-memory-1.3 {constructor, create, existing command} -body {
+    atom::memory create set
+} -returnCodes error -result [already set]
+
+test atom-memory-1.4 {constructor, create} -setup {
+    set result {}
+} -body {
+    lappend result [atom::memory create myamem]
+    lappend result [info commands ::myamem]
+    lappend result [myamem size]
+} -cleanup {
+    myamem destroy
+    unset result
+} -result {::myamem ::myamem 0}
+
+test atom-memory-1.5 {constructor, new} -setup {
+    set result {}
+} -body {
+    lappend result [set foo [atom::memory new]]
+    lappend result [info commands ::$foo]
+    lappend result [$foo size]
+} -cleanup {
+    $foo destroy
+    unset result foo
+} -match glob -result {::oo::Obj* ::oo::Obj* 0}
+
+# # ## ### ##### ######## ############# #####################
+return

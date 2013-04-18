@@ -6,7 +6,7 @@
 ## Requisites
 
 package require Tcl 8.5
-package require OO
+package require TclOO
 package require atom
 
 # # ## ### ##### ######## ############# #####################
@@ -61,7 +61,7 @@ oo::class create atom::memory {
     method exists {string} { dict exists $myid $string }
 
     # size () -> integer
-    method size {} { dict size }
+    method size {} { dict size $myid }
 
     # map: string, integer -> ()
     # intern the string, force the associated identifier.
