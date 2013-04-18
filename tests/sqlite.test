@@ -1,14 +1,15 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
 # # ## ### ##### ######## ############# #####################
-## memory.test:  tests for the atom::memory package.
+## sqlite.test:  tests for the atom::sqlite package.
 
 kt check Tcl     8.5
 kt check tcltest 2
 
 kt require support TclOO
+kt require support sqlite3
 
 kt local   support atom
-kt local   testing atom::memory
+kt local   testing atom::sqlite
 
 # # ## ### ##### ######## ############# #####################
 
@@ -22,22 +23,24 @@ proc badmethod {m real} {
 }
 
 proc new-store {} {
-    return [atom::memory create myatom]
+    sqlite3 mydb :memory:
+    return [atom::sqlite create myatom ::mydb atoms]
 }
 
 proc release-store {} {
-    myatom destroy
+    catch { myatom destroy }
+    catch { mydb     close }
     return
 }
 
 # identification to put into names of shared test cases.
-proc who {} { return memory }
+proc who {} { return sqlite }
 
 # # ## ### ##### ######## ############# #####################
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source memory-idgen.tcl
-kt source memory.testsuite
+kt source sqlite-idgen.tcl
+kt source sqlite.testsuite
 kt source atom.testsuite
 
 # # ## ### ##### ######## ############# #####################
