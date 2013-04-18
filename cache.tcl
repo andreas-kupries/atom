@@ -7,7 +7,7 @@
 ## Requisites
 
 package require Tcl 8.5
-package require OO
+package require TclOO
 package require atom
 package require atom::memory
 
@@ -21,9 +21,12 @@ oo::class create atom::cache {
     ## Lifecycle.
 
     constructor {backend} {
-	forward BACKEND $backend
+	# Make the backend available as a local command, under a fixed
+	# name. No need for an instance variable and resolution.
+	interp alias {} [self namespace]::BACKEND {} $backend
 
-	atom::memory CACHE
+	# The cache itself is also handled as a local command.
+	atom::memory create CACHE
 	CACHE clear
 	return
     }
