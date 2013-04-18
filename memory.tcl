@@ -35,10 +35,13 @@ oo::class create atom::memory {
     method id {string} {
 	if {![dict exists $myid $string]} {
 	    set id [dict size $myid]
+	    # Avoid conflicts with existing mappings. Such can occur
+	    # for deserialized mappings whiuch have holes.
+	    while {[dict exists $mystring $id]} {incr id}
 	    # Inlined 'map' without checks.
 	    dict set myid     $string $id
 	    dict set mystring $id $string
-	    return $di
+	    return $id
 	}
 	return [dict get $myid $string]
     }
@@ -70,11 +73,11 @@ oo::class create atom::memory {
 	# Check for conflicts with existing id or string.
 	if {[dict exists $myid $string] &&
 	    ([set knownid [dict get $myid $string]] != $id)} {
-	    my Error "String conflict, maps to $knownid != $id" \
+	    my Error "String conflict for \"$string\", maps to $knownid != $id" \
 		MAP CONFLICT ID $string $id $knownid
-	} else if {[dict exists $mystring $id] &&
+	} elseif {[dict exists $mystring $id] &&
 		   ([set knownstr [dict get $mystring $id]] ne $string)} {
-	    my Error "Identifier conflict, maps to \"$knownstr\" != \"$string\"" \
+	    my Error "Identifier conflict for \"$id\", maps to \"$knownstr\" != \"$string\"" \
 		MAP CONFLICT STRING $id $string $knownstr
 	}
 
@@ -102,7 +105,7 @@ oo::class create atom::memory {
     method load {serial} {
 	set myid $serial
 	set mystring {}
-	dict for {str id} $serial {
+	dict for {string id} $serial {
 	    dict set mystring $id $string
 	}
 	return

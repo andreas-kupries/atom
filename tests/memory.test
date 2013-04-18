@@ -29,7 +29,7 @@ proc new-store {args} {
 ## Two testsuites, for the custom (instantiation) and shared APIs.
 
 kt source memory.testsuite
-#kt source atom.testsuite
+kt source atom.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests
