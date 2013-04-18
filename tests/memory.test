@@ -1,0 +1,44 @@
+# -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## memory.test:  tests for the atom::memory package.
+
+kt check Tcl     8.5
+kt check tcltest 2
+
+kt require support TclOO
+
+kt local   support atom
+kt local   testing atom::memory
+
+# # ## ### ##### ######## ############# #####################
+
+proc already {cmd} {
+    return "can't create object \"$cmd\": command already exists with that name"
+}
+
+proc badmethod {m real} {
+    set real [string map {{, or} { or}} [linsert [join $real {, }] end-1 or]]
+    return "unknown method \"$m\": must be $real"
+}
+
+proc new-store {} {
+    return [atom::memory create myatom]
+}
+
+proc release-store {} {
+    myatom destroy
+    return
+}
+
+# Standard id for the n'th interned string.
+# n counting from 1.
+proc nth {x} { incr x -1 }
+
+# # ## ### ##### ######## ############# #####################
+## Two testsuites, for the custom (instantiation) and shared APIs.
+
+kt source memory.testsuite
+kt source atom.testsuite
+
+# # ## ### ##### ######## ############# #####################
+cleanupTests

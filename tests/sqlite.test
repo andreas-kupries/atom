@@ -1,0 +1,47 @@
+# -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## sqlite.test:  tests for the atom::sqlite package.
+
+kt check Tcl     8.5
+kt check tcltest 2
+
+kt require support TclOO
+kt require support sqlite3
+
+kt local   support atom
+kt local   testing atom::sqlite
+
+# # ## ### ##### ######## ############# #####################
+
+proc already {cmd} {
+    return "can't create object \"$cmd\": command already exists with that name"
+}
+
+proc badmethod {m real} {
+    set real [string map {{, or} { or}} [linsert [join $real {, }] end-1 or]]
+    return "unknown method \"$m\": must be $real"
+}
+
+proc new-store {} {
+    sqlite3 DB :memory:
+    return [atom::sqlite create myatom DB atoms]
+}
+
+proc release-store {} {
+    myatom destroy
+    DB     close
+    return
+}
+
+# Standard id for the n'th interned string.
+# n counting from 1.
+proc nth {x} { return $x }
+
+# # ## ### ##### ######## ############# #####################
+## Two testsuites, for the custom (instantiation) and shared APIs.
+
+kt source sqlite.testsuite
+kt source atom.testsuite
+
+# # ## ### ##### ######## ############# #####################
+cleanupTests

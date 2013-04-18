@@ -101,6 +101,14 @@ oo::class create atom {
     method APIerror {api} {
 	my Error "Unimplemented API $api" API MISSING $api
     }
+
+    method MAPerror {what val old new} {
+	set wx [string toupper $what]
+	set wh [string totitle $what]
+	my Error "$wh conflict for \"$val\", maps to \"$old\" != \"$new\"" \
+	    MAP CONFLICT $wx $val $new $old
+    }
+
 }
 
 # # ## ### ##### ######## ############# #####################
