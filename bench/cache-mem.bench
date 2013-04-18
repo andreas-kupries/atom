@@ -1,0 +1,26 @@
+# -*- tcl -*- tcl.tk//DSL tclbench//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## cache.bench:  benchmarks for the atom::cache package.
+##               memory backend.
+## (c) 2013 Andreas Kupries
+
+kb check Tcl 8.5
+
+kb require support   TclOO
+kb local   support   atom
+kb local   support   atom::memory
+kb local   benchmark atom::cache
+
+# # ## ### ##### ######## ############# #####################
+
+proc id {} { return cache/m }
+
+kb source ../tests/cache-setup.tcl
+kb source support.tcl
+
+# # ## ### ##### ######## ############# #####################
+
+kb source atom.benchmarks
+
+# # ## ### ##### ######## ############# #####################
+return

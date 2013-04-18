@@ -1,0 +1,306 @@
+## -*- tcl -*-
+# # ## ### ##### ######## ############# #####################
+## Tcl Benchmarks for "atom"-derived stores
+## (c) 2013 Andreas Kupries
+
+# Called on by the benchmark entrypoints of "memory", "cache",
+# "sqlite", and others. The procedure [id] returns a string telling us
+# which entrypoint is in use.
+
+# XXX TODO : Create utility command to report disabled
+# XXX TODO : benchmarks as skipped, or broken?
+
+# # ## ### ##### ######## ############# #####################
+## Note, the helper commands 'new-store' and 'release-store' supplied
+## are by the calling environment.
+
+# ### ### ### ######### ######### ######### ###########################
+## Benchmarked methods.
+
+# ------------*----------------
+# dispatch    |
+# destroy     |
+# ------------*----------------
+# +=          | -> merge
+# -->         | -> serialize
+# :=          | -> load
+# <--         | -> deserialize
+# ------------*----------------
+# clear       | *
+# deserialize |
+# exists      | *
+# id          | *
+# load        |
+# map         |
+# merge       |
+# names       | *
+# serialize   | *
+# size        | *
+# str         | *
+# ------------*----------------
+
+# ### ### ### ######### ######### ######### ###########################
+
+set series { 0 1 10 100 1000 10000 }
+
+# ### ### ### ######### ######### ######### ###########################
+
+# size - Time to query the size of an atom-store containing N
+#        elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(1).
+
+foreach n $series {
+    bench -desc "atom-store [id] size $n" -pre {
+	make $n
+    } -body {
+	myatom size
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# names - Time to query the set of interned strings of an atom-store
+#         containing N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(n).
+
+foreach n $series {
+    bench -desc "atom-store [id] names $n" -pre {
+	make $n
+    } -body {
+	myatom names
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# serialize - Time to query the entire mapping of an atom-store
+#         containing N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(n).
+
+foreach n $series {
+    bench -desc "atom-store [id] serialize $n" -pre {
+	make $n
+    } -body {
+	myatom serialize
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# id - Time to query the string/id mapping of an atom-store containing
+#      N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(1).
+
+foreach n $series {
+    if {$n < 10} continue
+    bench -desc "atom-store [id] id $n" -pre {
+	make $n
+    } -body {
+	myatom id 5
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# str - Time to query the id/string mapping of an atom-store
+#       containing N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(1).
+
+foreach n $series {
+    if {$n < 10} continue
+    bench -desc "atom-store [id] str $n" -pre {
+	make $n
+    } -body {
+	myatom str 5
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# exists - Time to query the id/string mapping of an atom-store
+#       containing N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(1).
+
+foreach n $series {
+    if {$n < 10} continue
+    bench -desc "atom-store [id] exists/y $n" -pre {
+	make $n
+    } -body {
+	myatom exists 5
+    } -post {
+	release-store
+    }
+
+    bench -desc "atom-store [id] exists/n $n" -pre {
+	make $n
+    } -body {
+	myatom exists foo
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# clear - Time to clear an atom-store containing N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(n), n = size of queue
+
+# For size 0 'clear' is idempotent and can be run multiple times in one go.
+bench -desc "atom-store [id] clear 0" -pre {
+    make 0
+} -body {
+    myatom clear
+} -post {
+    release-store
+}
+
+return
+# For size > 0 we have to re-make the atom-store for each iteration.
+# Note that full destruction is not required. Just filling it with strings again.
+#
+# FUTURE: See if we can somehow integrate a sampling profiler to mark
+# the interesting region, allowing us to put setup code into benchmark
+# while not counting the time spent in it.
+
+foreach n $series {
+    if {$n == 0} continue
+    if {$n == 10000} continue
+
+    bench -desc "atom-store [id] clear $n" -pre {
+	new-store
+    } -ipre {
+	push $n
+    } -body {
+	myatom clear
+    } -ipost {
+	# nothing to do, already empty.
+    } -post {
+	release-store
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+return
+
+# all - Time to return a list of all elements from a queue containing
+#       N elements.
+# N in { 0 1 10 100 1000 10000 }
+# Expected O(n), n = size of queue
+
+foreach n $series {
+    bench -desc "queue all $n" -pre {
+	make $n
+    } -body {
+	q all
+    } -post {
+	q destroy
+    }
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# append - Time to add N elements to an empty queue.
+#
+#       2 variants of doing this.
+#       (a) append all at once.
+#       (b) append them one at a time.
+
+# N in { 0 1 10 100 1000 10000 }
+
+# Expected O(n), n = size of resulting queue.
+# Variant (b) should have higher overhead however.
+
+foreach n $series {
+    if {$n == 0} continue
+
+    set nel [iota $n]
+    set cmd {} ; foreach x $nel { lappend cmd [list q append $x] }
+
+    bench -desc "queue append all $n" -ipre {
+	make 0
+    } -body {
+	q append {*}$nel
+    } -ipost {
+	q destroy
+    }
+
+    bench -desc "queue append inc $n" -pre {
+	proc foo {} [join $cmd \n]
+	catch {foo} ;# compile
+    } -ipre {
+	make 0
+    } -body {
+	foo
+    } -ipost {
+	q destroy
+    } -post {
+	rename foo {}
+    }
+
+    unset nel cmd
+}
+
+# ### ### ### ######### ######### ######### ###########################
+
+# prepend - Time to add N elements to an empty queue.
+#
+#       2 variants of doing this.
+#       (a) prepend all at once.
+#       (b) prepend them one at a time.
+
+# N in { 0 1 10 100 1000 10000 }
+
+# Expected O(n), n = size of resulting queue.
+# Variant (b) should have higher overhead however.
+
+foreach n $series {
+    if {$n == 0} continue
+
+    set nel [iota $n]
+    set cmd {} ; foreach x $nel { lappend cmd [list q prepend $x] }
+
+    bench -desc "queue prepend all $n" -ipre {
+	make 0
+    } -body {
+	q prepend {*}$nel
+    } -ipost {
+	q destroy
+    }
+
+    bench -desc "queue prepend inc $n" -pre {
+	proc foo {} [join $cmd \n]
+	catch {foo} ;# compile
+    } -ipre {
+	make 0
+    } -body {
+	foo
+    } -ipost {
+	q destroy
+    } -post {
+	rename foo {}
+    }
+
+    unset nel cmd
+}
+
+# ### ### ### ######### ######### ######### ###########################
+## Complete
+
+return

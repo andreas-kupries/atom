@@ -1,0 +1,24 @@
+# -*- tcl -*- tcl.tk//DSL tclbench//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## memory.bench:  benchmarks for the atom::memory package.
+## (c) 2013 Andreas Kupries
+
+kb check Tcl 8.5
+
+kb require support   TclOO
+kb local   support   atom
+kb local   benchmark atom::memory
+
+# # ## ### ##### ######## ############# #####################
+
+proc id {} { return memory }
+
+kb source ../tests/memory-setup.tcl
+kb source support.tcl
+
+# # ## ### ##### ######## ############# #####################
+
+kb source atom.benchmarks
+
+# # ## ### ##### ######## ############# #####################
+return

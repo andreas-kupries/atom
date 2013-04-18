@@ -1,0 +1,28 @@
+# -*- tcl -*- tcl.tk//DSL tclbench//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## cache-sqlite-file.bench:  benchmarks for the atom::cache package.
+##                           sqlite backend, database on disk
+## (c) 2013 Andreas Kupries
+
+kb check Tcl 8.5
+
+kb require support   TclOO
+kb require support   sqlite3
+kb local   support   atom
+kb local   support   atom::memory
+kb local   support   atom::sqlite
+kb local   benchmark atom::cache
+
+# # ## ### ##### ######## ############# #####################
+
+proc id {} { return cache/sf }
+
+kb source ../tests/cache-setup-sqlite-file.tcl
+kb source support-sqlite.tcl
+
+# # ## ### ##### ######## ############# #####################
+
+kb source atom.benchmarks
+
+# # ## ### ##### ######## ############# #####################
+return

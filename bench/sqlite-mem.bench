@@ -1,0 +1,26 @@
+# -*- tcl -*- tcl.tk//DSL tclbench//EN//2.0
+# # ## ### ##### ######## ############# #####################
+## sqlite.bench:  benchmarks for the atom::sqlite package.
+##                database in memory.
+## (c) 2013 Andreas Kupries
+
+kb check Tcl 8.5
+
+kb require support   TclOO
+kb require support   sqlite3
+kb local   support   atom
+kb local   benchmark atom::sqlite
+
+# # ## ### ##### ######## ############# #####################
+
+proc id {} { return sqlite/m }
+
+kb source ../tests/sqlite-setup.tcl
+kb source support-sqlite.tcl
+
+# # ## ### ##### ######## ############# #####################
+
+kb source atom.benchmarks
+
+# # ## ### ##### ######## ############# #####################
+return
