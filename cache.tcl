@@ -52,20 +52,27 @@ oo::class create atom::cache {
     #method str {id} { CACHE str $id }
     forward str CACHE str
 
-
     # names () -> list(string)
     # query set of interned strings.
-    #method names {} { CACHE names }
-    forward names CACHE names
+    # backend is authoritative source.
+    # cache may not know everything, yet.
+    #method names {} { BACKEND names }
+    forward names BACKEND names
 
     # exists: string -> boolean
     # query if string is known/interned
-    #method exists {string} { CACHE exists $string }
-    forward exists CACHE exists
+    # check cache first, then the authoritative source.
+    method exists {string} {
+	set has [CACHE exists $string]
+	if {$has} { return $has }
+	return [BACKEND exists $string]
+    }
 
     # size () -> integer
-    #method size {} { CACHE size }
-    forward size CACHE size
+    # backend is authoritative source.
+    # cache may not know everything, yet.
+    #method size {} { BACKEND size }
+    forward size BACKEND size
 
     # map: string, integer -> ()
     # intern the string, force the associated identifier.
