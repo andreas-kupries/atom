@@ -85,6 +85,9 @@ foreach n $series {
 # Expected O(n).
 
 foreach n $series {
+    if {([id] in {cache/sf sqlite/f}) &&
+	($n > 100)} continue
+
     bench -desc "atom-store [id] serialize $n" -pre {
 	make $n
     } -body {
@@ -132,7 +135,7 @@ foreach n $series {
 
 # ### ### ### ######### ######### ######### ###########################
 
-# exists - Time to query the id/string mapping of an atom-store
+# exists, exists-id - Time to query the id/string mapping of an atom-store
 #       containing N elements.
 # N in { 0 1 10 100 1000 10000 }
 # Expected O(1).
@@ -146,11 +149,36 @@ foreach n $series {
     } -post {
 	release-store
     }
+}
 
+foreach n $series {
+    if {$n < 10} continue
     bench -desc "atom-store [id] exists/n $n" -pre {
 	make $n
     } -body {
 	myatom exists foo
+    } -post {
+	release-store
+    }
+}
+
+foreach n $series {
+    if {$n < 10} continue
+    bench -desc "atom-store [id] exists-id/y $n" -pre {
+	make $n
+    } -body {
+	myatom exists-id 5
+    } -post {
+	release-store
+    }
+}
+
+foreach n $series {
+    if {$n < 10} continue
+    bench -desc "atom-store [id] exists-id/n $n" -pre {
+	make $n
+    } -body {
+	myatom exists-id 200000
     } -post {
 	release-store
     }
