@@ -53,7 +53,7 @@ test atom::[who]-dispatch-1.1 {instance, bad method name} -setup {
 } -cleanup {
     release-store
 } -returnCodes error \
-    -result [badmethod foo {+= --> := <-- clear deserialize destroy exists id load map merge names serialize size str}]
+    -result [badmethod foo {+= --> := <-- clear deserialize destroy exists exists-id id load map merge names serialize size str}]
 
 # # ## ### ##### ######## ############# #####################
 ## destructor
