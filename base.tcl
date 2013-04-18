@@ -36,6 +36,10 @@ oo::class create atom {
     # query if string is known/interned
     method exists {string} { my APIerror exists }
 
+    # exists-id: id -> boolean
+    # query if id is known/interned
+    method exists-id {id} { my APIerror exists-id }
+
     # size () -> integer
     method size {} { my APIerror size }
 

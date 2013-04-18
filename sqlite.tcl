@@ -77,6 +77,12 @@ oo::class create atom::sqlite {
 	DB onecolumn $sql_exists
     }
 
+    # exists-id: id -> boolean
+    # query if id is known/interned
+    method exists-id {id} {
+	DB onecolumn $sql_existsid
+    }
+
     # size () -> integer
     method size {} {
 	return [DB eval $sql_size]
