@@ -23,10 +23,8 @@ oo::class create atom::sqlite {
     ## State
 
     variable mytable \
-	sql_toid sql_tostr sql_exists \
-	sql_map sql_extend sql_clear \
-	sql_names sql_size sql_existsid \
-	sql_serial
+	sql_toid sql_tostr sql_map sql_extend sql_clear \
+	sql_names sql_size sql_serial
     # Name of the database table used for interning,
     # plus the sql commands to access it.
 
@@ -49,7 +47,7 @@ oo::class create atom::sqlite {
     # intern the string, return its unique numeric identifier
     method id {string} {
 	DB transaction {
-	    if {[DB onecolumn $sql_exists]} {
+	    if {[DB exists $sql_toid]} {
 		return [DB onecolumn $sql_toid]
 	    }
 	    variable size
@@ -63,7 +61,7 @@ oo::class create atom::sqlite {
     # map numeric identifier back to its string
     method str {id} {
 	DB transaction {
-	    if {![DB onecolumn $sql_existsid]} {
+	    if {![DB exists $sql_tostr]} {
 		my Error "Expected string id, got \"$id\"" BAD ID $id
 	    }
 	    return [DB onecolumn $sql_tostr]
@@ -82,7 +80,7 @@ oo::class create atom::sqlite {
     # query if string is known/interned
     method exists {string} {
 	DB transaction {
-	    DB onecolumn $sql_exists
+	    DB exists $sql_toid
 	}
     }
 
@@ -90,7 +88,7 @@ oo::class create atom::sqlite {
     # query if id is known/interned
     method exists-id {id} {
 	DB transaction {
-	    DB onecolumn $sql_existsid
+	    DB exists $sql_tostr
 	}
     }
 
@@ -109,7 +107,7 @@ oo::class create atom::sqlite {
     # throws error on conflict with existing string/identifier.
     method map {string id} {
 	DB transaction {
-	    if {[DB onecolumn $sql_exists]} {
+	    if {[DB exists $sql_toid]} {
 		set knownid [DB onecolumn $sql_toid]
 		if {$knownid != $id} {
 		    # mapped, id mismatch
@@ -118,7 +116,7 @@ oo::class create atom::sqlite {
 		    # already mapped, ignore
 		    return $id
 		}
-	    } elseif {[DB onecolumn $sql_existsid]} {
+	    } elseif {[DB exists $sql_tostr]} {
 		set knownstr [DB onecolumn $sql_tostr]
 		if {$knownstr ne $string} {
 		    # mapped, string mismatch
@@ -218,8 +216,6 @@ oo::class create atom::sqlite {
 	my Def sql_extend   { INSERT            INTO "<<table>>" VALUES (NULL, :string) }
 	my Def sql_map      { INSERT            INTO "<<table>>" VALUES (:id, :string)  }
 	my Def sql_clear    { DELETE            FROM "<<table>>" }
-	my Def sql_exists   { SELECT count(*)   FROM "<<table>>" WHERE string = :string }
-	my Def sql_existsid { SELECT count(*)   FROM "<<table>>" WHERE id     = :id     }
 	my Def sql_toid     { SELECT id         FROM "<<table>>" WHERE string = :string }
 	my Def sql_tostr    { SELECT string     FROM "<<table>>" WHERE id     = :id     }
 	my Def sql_names    { SELECT string     FROM "<<table>>" }
