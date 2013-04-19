@@ -192,21 +192,16 @@ oo::class create atom::sqlite {
     method InitializeSchema {table} {
 	lappend map <<table>> $table
 
-	if {![dbutil has [self namespace]::DB $table]} {
-	    # Table missing. Create.
-	    DB transaction {
-		DB eval [string map $map {
-		    CREATE TABLE "<<table>>"
-		    (  id     INTEGER PRIMARY KEY AUTOINCREMENT,
-		       string TEXT    NOT NULL UNIQUE
-		    );
-		    -- id and string have implied indices on them
-		    -- as primary key and unique columns.
-		}]
-	    }
-	} else {
-	    # TODO: Find a way to check that the schema is as expected.
-	    #puts [join [dbutil::table_info [self namespace]::DB $table] \n]
+	set fqndb [self namespace]::DB
+
+	if {![dbutil initialize-schema $fqndb reason $table {{
+	    id     INTEGER PRIMARY KEY AUTOINCREMENT,
+	    string TEXT    NOT NULL UNIQUE
+	} {
+	    {id     INTEGER 0 {} 1}
+	    {string TEXT    1 {} 0}
+	}}]} {
+	    my Error $reason BAD SCHEMA
 	}
 
 	# Generate the custom sql commands.
