@@ -8,6 +8,7 @@ kt check tcltest 2
 
 kt require support TclOO
 kt require support sqlite3
+kt require support dbutil
 
 kt local   support atom
 kt local   testing atom::sqlite

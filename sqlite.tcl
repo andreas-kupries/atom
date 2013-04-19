@@ -11,6 +11,7 @@
 package require Tcl 8.5
 package require TclOO
 package require atom
+package require dbutil
 package require sqlite3
 
 # # ## ### ##### ######## ############# #####################
@@ -191,12 +192,7 @@ oo::class create atom::sqlite {
     method InitializeSchema {table} {
 	lappend map <<table>> $table
 
-	if {![llength [DB onecolumn {
-	    SELECT name
-	    FROM  sqlite_master 
-	    WHERE type = 'table'
-	    AND   name = :table
-	}]]} {
+	if {![dbutil has [self namespace]::DB $table]} {
 	    # Table missing. Create.
 	    DB transaction {
 		DB eval [string map $map {
@@ -210,6 +206,7 @@ oo::class create atom::sqlite {
 	    }
 	} else {
 	    # TODO: Find a way to check that the schema is as expected.
+	    #puts [join [dbutil::table_info [self namespace]::DB $table] \n]
 	}
 
 	# Generate the custom sql commands.
