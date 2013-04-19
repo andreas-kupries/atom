@@ -25,9 +25,10 @@ oo::class create atom::sqlite {
     variable mytable \
 	sql_toid sql_tostr sql_exists \
 	sql_map sql_extend sql_clear \
-	sql_names sql_size sql_existsid
+	sql_names sql_size sql_existsid \
+	sql_serial
     # Name of the database table used for interning,
-    # plus the commands to access it.
+    # plus the sql commands to access it.
 
     # # ## ### ##### ######## #############
     ## Lifecycle.
@@ -51,6 +52,8 @@ oo::class create atom::sqlite {
 	    if {[DB onecolumn $sql_exists]} {
 		return [DB onecolumn $sql_toid]
 	    }
+	    variable size
+	    if {[info exists size]} { incr size }
 	    DB eval $sql_extend
 	    return [DB last_insert_rowid]
 	}
@@ -93,9 +96,12 @@ oo::class create atom::sqlite {
 
     # size () -> integer
     method size {} {
+	variable size
+	if {[info exists size]} { return $size }
 	DB transaction {
-	    return [DB eval $sql_size]
+	    set size [DB eval $sql_size]
 	}
+	# implied return
     }
 
     # map: string, integer -> ()
@@ -123,6 +129,8 @@ oo::class create atom::sqlite {
 		}
 	    }
 	    # unknown mapping, no conflicts, enter.
+	    variable size
+	    if {[info exists size]} { incr size }
 	    DB eval $sql_map
 	}
 	return $id
@@ -131,8 +139,50 @@ oo::class create atom::sqlite {
     # clear () -> ()
     # Remove all known mappings.
     method clear {} {
+	variable size ; unset -nocomplain size
 	DB transaction {
 	    DB eval $sql_clear
+	}
+	return
+    }
+
+    # # ## ### ##### ######## #############
+    ## API. Standard methods. Reimplemented to place all low-level
+    ## operations into transactions, reducing amount of disk access.
+
+    # serialize: () -> dict (string -> identifier)
+    method serialize {} {
+	return [DB eval $sql_serial]
+    }
+
+    # deserialize: dict (string -> identifier) -> ()
+    method deserialize {serial} {
+	DB transaction {
+	    dict for {string id} $serial {
+		my map $string $id
+	    }
+	}
+	return
+    }
+
+    # load: dict (string -> identifier) -> ()
+    method load {serial} {
+	variable size ; unset -nocomplain size
+	DB transaction {
+	    DB eval $sql_clear
+	    dict for {string id} $serial {
+		my map $string $id
+	    }
+	}
+	return
+    }
+
+    # merge: dict (string -> identifier) -> ()
+    method merge {serial} {
+	DB transaction {
+	    dict for {string _} $serial {
+		my id $string
+	    }
 	}
 	return
     }
@@ -155,7 +205,7 @@ oo::class create atom::sqlite {
 		    CREATE TABLE "<<table>>"
 		    (  id     INTEGER PRIMARY KEY AUTOINCREMENT,
 		       string TEXT    NOT NULL UNIQUE
-		       );
+		    );
 		    -- id and string have implied indices on them
 		    -- as primary key and unique columns.
 		}]
@@ -165,58 +215,23 @@ oo::class create atom::sqlite {
 	}
 
 	# Generate the custom sql commands.
+	my Def sql_extend   { INSERT            INTO "<<table>>" VALUES (NULL, :string) }
+	my Def sql_map      { INSERT            INTO "<<table>>" VALUES (:id, :string)  }
+	my Def sql_clear    { DELETE            FROM "<<table>>" }
+	my Def sql_exists   { SELECT count(*)   FROM "<<table>>" WHERE string = :string }
+	my Def sql_existsid { SELECT count(*)   FROM "<<table>>" WHERE id     = :id     }
+	my Def sql_toid     { SELECT id         FROM "<<table>>" WHERE string = :string }
+	my Def sql_tostr    { SELECT string     FROM "<<table>>" WHERE id     = :id     }
+	my Def sql_names    { SELECT string     FROM "<<table>>" }
+	my Def sql_serial   { SELECT string, id FROM "<<table>>" }
+	my Def sql_size     { SELECT count(*)   FROM "<<table>>" }
 
-	set sql_toid [string map $map {
-	    SELECT id
-	    FROM   "<<table>>"
-	    WHERE  string = :string
-	}]
+	return
+    }
 
-	set sql_tostr [string map $map {
-	    SELECT string
-	    FROM   "<<table>>"
-	    WHERE  id = :id
-	}]
-
-	set sql_exists [string map $map {
-	    SELECT count(*)
-	    FROM   "<<table>>"
-	    WHERE  string = :string
-	}]
-
-	set sql_existsid [string map $map {
-	    SELECT count(*)
-	    FROM   "<<table>>"
-	    WHERE  id = :id
-	}]
-
-	set sql_map [string map $map {
-	    INSERT
-	    INTO   "<<table>>"
-	    VALUES (:id, :string)
-	}]
-
-	set sql_extend [string map $map {
-	    INSERT
-	    INTO   "<<table>>"
-	    VALUES (NULL, :string)
-	}]
-
-	set sql_clear [string map $map {
-	    DELETE
-	    FROM   "<<table>>"
-	}]
-
-	set sql_names [string map $map {
-	    SELECT string
-	    FROM   "<<table>>"
-	}]
-
-	set sql_size [string map $map {
-	    SELECT count(*)
-	    FROM   "<<table>>"
-	}]
-
+    method Def {var sql} {
+	upvar 1 map map
+	set $var [string map $map $sql]
 	return
     }
 

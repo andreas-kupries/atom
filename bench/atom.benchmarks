@@ -85,9 +85,6 @@ foreach n $series {
 # Expected O(n).
 
 foreach n $series {
-    if {([id] in {cache/sf sqlite/f}) &&
-	($n > 100)} continue
-
     bench -desc "atom-store [id] serialize $n" -pre {
 	make $n
     } -body {
