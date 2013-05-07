@@ -386,7 +386,7 @@ test [test-class]-id-1.4 {id, different strings, different ids} -setup {
     release-store
 } -result [list [nth 1] [nth 2]]
 
-test [test-class]-map-1.5 {id, avoid conflicts} -setup {
+test [test-class]-id-1.5 {id, avoid conflicts} -setup {
     # see *.test, procedure [map15] for details, also test merge-[12].6
     new-store
     test-store map A 3
