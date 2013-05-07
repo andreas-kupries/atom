@@ -1,0 +1,908 @@
+## -*- tcl -*-
+## (c) 2013 Andreas Kupries
+# # ## ### ##### ######## ############# #####################
+## Test suite for atom stores, common parts across implementations.
+#
+## The external procedures 'already' and 'badmethod' are used to
+## generate implementation specific error messages. Implementations
+## have to be provided by the invoking implementation-specific
+## testsuite.
+#
+## The external procedures 'new-store' and 'release-store' are used to
+## create and destroy an instance of the store under test.
+
+# ------------*----------------
+# dispatch    | *
+# destroy     | *
+# ------------*----------------
+# +=          | -> merge
+# -->         | -> serialize
+# :=          | -> load
+# <--         | -> deserialize
+# ------------*----------------
+# clear       | *
+# deserialize | *
+# exists      | *
+# exists-id   | *
+# id          | *
+# load        | *
+# map         | *
+# merge       | *
+# names       | *
+# serialize   | *
+# size        | *
+# str         | *
+# ------------*----------------
+
+# # ## ### ##### ######## ############# #####################
+## dispatch
+
+test [test-class]-dispatch-1.0 {instance, no method} -setup {
+    new-store
+} -body {
+    test-store
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result {wrong # args: should be "test-store method ?arg ...?"}
+
+test [test-class]-dispatch-1.1 {instance, bad method name} -setup {
+    new-store
+} -body {
+    test-store foo
+} -cleanup {
+    release-store
+} -returnCodes error \
+    -result [badmethod foo {+= --> := <-- clear deserialize destroy exists exists-id id load map merge names serialize size str}]
+
+# # ## ### ##### ######## ############# #####################
+## destructor
+
+test [test-class]-destroy-1.0 {destroy, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store destroy X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store destroy"}
+
+test [test-class]-destroy-1.1 {destroy} -setup {
+    new-store
+} -body {
+    release-store
+    info commands ::test-store
+} -result {}
+
+# # ## ### ##### ######## ############# #####################
+## clear
+
+test [test-class]-clear-1.0 {clear, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store clear S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store clear"}
+
+test [test-class]-clear-1.1 {clear, none} -setup {
+    new-store
+} -body {
+    list [test-store size] [test-store clear] [test-store size]
+} -cleanup {
+    release-store
+} -result {0 {} 0}
+
+test [test-class]-clear-1.2 {clear, some} -setup {
+    new-store
+    test-store id S
+    test-store id A
+    test-store id R
+    test-store id C
+} -body {
+    list [test-store size] [test-store clear] [test-store size]
+} -cleanup {
+    release-store
+} -result {4 {} 0}
+
+# # ## ### ##### ######## ############# #####################
+## deserialize, <--
+
+test [test-class]-deserialize-1.0 {deserialize, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store deserialize
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store deserialize serial"}
+
+test [test-class]-deserialize-1.1 {deserialize, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store deserialize S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store deserialize serial"}
+
+test [test-class]-deserialize-1.2 {deserialize, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store deserialize {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-deserialize-1.3 {deserialize, some over empty} -setup {
+    new-store
+} -body {
+    test-store deserialize {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+test [test-class]-deserialize-1.4 {deserialize, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store deserialize {}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] L [nth 3] S [nth 2]]
+
+test [test-class]-deserialize-1.5 {deserialize, some over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store deserialize {s 4 a 5 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] a 5 g 6 L [nth 3] S [nth 2] s 4]
+
+test [test-class]-deserialize-1.6 {deserialize, some over some, conflicts} -setup {
+    new-store
+    test-store id A ; # 0
+    test-store id S ; # 1, conflict 's'.
+    test-store id L ; # 2
+} -body {
+    test-store deserialize {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -returnCodes error -result "Id conflict for \"1\", maps to \"[deserX6char]\" != \"s\""
+
+test [test-class]-deserialize-1.7 {deserialize, some over some, conflicts} -setup {
+    new-store
+    test-store id A
+    test-store id S ; # conflict, id mismatch
+    test-store id L
+} -body {
+    test-store deserialize {S 7 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -returnCodes error -result "String conflict for \"S\", maps to \"[nth 2]\" != \"7\""
+
+test [test-class]-deserialize-2.0 {<--, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store <--
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store <-- serial"}
+
+test [test-class]-deserialize-2.1 {<--, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store <-- S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store <-- serial"}
+
+test [test-class]-deserialize-2.2 {<--, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store <-- {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-deserialize-2.3 {<--, some over empty} -setup {
+    new-store
+} -body {
+    test-store <-- {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+test [test-class]-deserialize-2.4 {<--, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store <-- {}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] L [nth 3] S [nth 2]]
+
+test [test-class]-deserialize-2.5 {<--, some over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store <-- {s 5 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] a 4 g 6 L [nth 3] S [nth 2] s 5]
+
+test [test-class]-deserialize-2.6 {<--, some over some, conflicts} -setup {
+    new-store
+    test-store id A ; # 0
+    test-store id S ; # 1, conflict 's'.
+    test-store id L ; # 2
+} -body {
+    test-store <-- {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -returnCodes error -result "Id conflict for \"1\", maps to \"[deserX6char]\" != \"s\""
+
+test [test-class]-deserialize-2.7 {<--, some over some, conflicts} -setup {
+    new-store
+    test-store id A ; #
+    test-store id S ; # conflict, id mismatch
+    test-store id L ; #
+} -body {
+    test-store <-- {S 7 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -returnCodes error -result "String conflict for \"S\", maps to \"[nth 2]\" != \"7\""
+
+# # ## ### ##### ######## ############# #####################
+## exists
+
+test [test-class]-exists-1.0 {exists, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store exists
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store exists string"}
+
+test [test-class]-exists-1.1 {exists, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store exists S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store exists string"}
+
+test [test-class]-exists-1.2 {exists, no} -setup {
+    new-store
+} -body {
+    test-store exists S
+} -cleanup {
+    release-store
+} -result 0
+
+test [test-class]-exists-1.3 {exists, yes} -setup {
+    new-store
+    test-store id S
+} -body {
+    test-store exists S
+} -cleanup {
+    release-store
+} -result 1
+
+# # ## ### ##### ######## ############# #####################
+## exists-id
+
+test [test-class]-exists-id-1.0 {exists-id, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store exists-id
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store exists-id id"}
+
+test [test-class]-exists-id-1.1 {exists-id, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store exists-id S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store exists-id id"}
+
+test [test-class]-exists-id-1.2 {exists-id, no} -setup {
+    new-store
+} -body {
+    test-store exists-id 5
+} -cleanup {
+    release-store
+} -result 0
+
+test [test-class]-exists-id-1.3 {exists-id, yes} -setup {
+    new-store
+    test-store id S
+} -body {
+    test-store exists-id [nth 1]
+} -cleanup {
+    release-store
+} -result 1
+
+# # ## ### ##### ######## ############# #####################
+## id
+
+test [test-class]-id-1.0 {id, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store id
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store id string"}
+
+test [test-class]-id-1.1 {id, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store id S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store id string"}
+
+test [test-class]-id-1.2 {id} -setup {
+    new-store
+} -body {
+    test-store id S
+} -cleanup {
+    release-store
+} -result [nth 1]
+
+test [test-class]-id-1.3 {id, duplicates have same id} -setup {
+    new-store
+} -body {
+    list [test-store id S] [test-store id S]
+} -cleanup {
+    release-store
+} -result [list [nth 1] [nth 1]]
+
+test [test-class]-id-1.4 {id, different strings, different ids} -setup {
+    new-store
+} -body {
+    list [test-store id S] [test-store id S2]
+} -cleanup {
+    release-store
+} -result [list [nth 1] [nth 2]]
+
+test [test-class]-id-1.5 {id, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test merge-[12].6
+    new-store
+    test-store map A 3
+    test-store map S 5
+    test-store map L 1
+} -body {
+    test-store id s
+    test-store id a
+    test-store id g
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [map15]
+
+# # ## ### ##### ######## ############# #####################
+## load
+
+test [test-class]-load-1.0 {load, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store load
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store load serial"}
+
+test [test-class]-load-1.1 {load, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store load S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store load serial"}
+
+test [test-class]-load-1.2 {load, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store load {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-load-1.3 {load, some over empty} -setup {
+    new-store
+} -body {
+    test-store load {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+test [test-class]-load-1.4 {load, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store load {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-load-1.5 {load, some over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store load {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+test [test-class]-load-2.0 {:=, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store :=
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store := serial"}
+
+test [test-class]-load-2.1 {:=, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store := S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store := serial"}
+
+test [test-class]-load-2.2 {:=, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store := {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-load-2.3 {:=, some over empty} -setup {
+    new-store
+} -body {
+    test-store := {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+test [test-class]-load-2.4 {:=, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store := {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-load-2.5 {:=, some over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store := {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {a 4 g 6 s 1}
+
+# # ## ### ##### ######## ############# #####################
+## map
+
+test [test-class]-map-1.0 {map, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store map
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store map string id"}
+
+test [test-class]-map-1.1 {map, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store map S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store map string id"}
+
+test [test-class]-map-1.2 {map, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store map S I A
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store map string id"}
+
+test [test-class]-map-1.3 {map, string conflict} -setup {
+    new-store
+} -body {
+    test-store map S 0
+    test-store map S 1
+} -cleanup {
+    release-store
+} -returnCodes error -result {String conflict for "S", maps to "0" != "1"}
+
+test [test-class]-map-1.4 {map, id conflict} -setup {
+    new-store
+} -body {
+    test-store map S 0
+    test-store map A 0
+} -cleanup {
+    release-store
+} -returnCodes error -result {Id conflict for "0", maps to "S" != "A"}
+
+test [test-class]-map-1.5 {map, no conflict} -setup {
+    new-store
+} -body {
+    test-store map S 22
+    test-store map S 22
+} -cleanup {
+    release-store
+} -result 22
+
+test [test-class]-map-1.6 {map} -setup {
+    new-store
+} -body {
+    test-store map S 1
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {S 1}
+
+test [test-class]-map-1.7 {map, multiple} -setup {
+    new-store
+} -body {
+    test-store map S 1
+    test-store map A 5
+    test-store map R 0
+    test-store map C 3
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result {A 5 C 3 R 0 S 1}
+
+# # ## ### ##### ######## ############# #####################
+## merge
+
+test [test-class]-merge-1.0 {merge, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store merge
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store merge serial"}
+
+test [test-class]-merge-1.1 {merge, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store merge S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store merge serial"}
+
+test [test-class]-merge-1.2 {merge, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store merge {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-merge-1.3 {merge, some over empty} -setup {
+    new-store
+} -body {
+    test-store merge {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list a [nth 2] g [nth 3] s [nth 1]]
+
+test [test-class]-merge-1.4 {merge, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store merge {}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] L [nth 3] S [nth 2]]
+
+test [test-class]-merge-1.5 {merge, some over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store merge {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] a [nth 5] g [nth 6] L [nth 3] S [nth 2] s [nth 4]]
+
+test [test-class]-merge-1.6 {merge, some over some, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test map-1.5
+    new-store
+    test-store load {A 3 S 5 L 1}
+} -body {
+    test-store merge {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [map15]
+
+test [test-class]-merge-2.0 {+=, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store +=
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store += serial"}
+
+test [test-class]-merge-2.1 {+=, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store += S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store += serial"}
+
+test [test-class]-merge-2.2 {+=, nothing over empty} -setup {
+    new-store
+} -body {
+    test-store += {}
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-merge-2.3 {+=, some over empty} -setup {
+    new-store
+} -body {
+    test-store += {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list a [nth 2] g [nth 3] s [nth 1]]
+
+test [test-class]-merge-2.4 {+=, nothing over some} -setup {
+    new-store
+    test-store id A
+    test-store id S
+    test-store id L
+} -body {
+    test-store += {}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] L [nth 3] S [nth 2]]
+
+test [test-class]-merge-2.5 {+=, some over some} -setup {
+    new-store
+    test-store id A ; # 0
+    test-store id S ; # 1
+    test-store id L ; # 2
+} -body {
+    test-store += {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 1] a [nth 5] g [nth 6] L [nth 3] S [nth 2] s [nth 4]]
+
+test [test-class]-merge-2.6 {+=, some over some, avoid conflicts} -setup {
+    # see *.test, procedure [map15] for details, also test map-1.5
+    new-store
+    test-store load {A 3 S 5 L 1}
+} -body {
+    test-store += {s 1 a 4 g 6}
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [map15]
+
+# # ## ### ##### ######## ############# #####################
+## names
+
+test [test-class]-names-1.0 {names, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store names S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store names"}
+
+test [test-class]-names-1.1 {names, none} -setup {
+    new-store
+} -body {
+    test-store names
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-names-1.2 {names, some} -setup {
+    new-store
+    test-store id S
+    test-store id A
+    test-store id R
+    test-store id C
+} -body {
+    lsort -dict [test-store names]
+} -cleanup {
+    release-store
+} -result {A C R S}
+
+# # ## ### ##### ######## ############# #####################
+## serialize, -->
+
+test [test-class]-serialize-1.0 {serialize, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store serialize S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store serialize"}
+
+test [test-class]-serialize-1.1 {serialize, none} -setup {
+    new-store
+} -body {
+    test-store serialize
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-serialize-1.2 {serialize, some} -setup {
+    new-store
+    test-store id S
+    test-store id A
+    test-store id R
+    test-store id C
+} -body {
+    kt dictsort [test-store serialize]
+} -cleanup {
+    release-store
+} -result [list A [nth 2] C [nth 4] R [nth 3] S [nth 1]]
+
+test [test-class]-serialize-2.0 {-->, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store --> S
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store -->"}
+
+test [test-class]-serialize-2.1 {-->, none} -setup {
+    new-store
+} -body {
+    test-store -->
+} -cleanup {
+    release-store
+} -result {}
+
+test [test-class]-serialize-2.2 {-->, some} -setup {
+    new-store
+    test-store id S
+    test-store id A
+    test-store id R
+    test-store id C
+} -body {
+    kt dictsort [test-store -->]
+} -cleanup {
+    release-store
+} -result [list A [nth 2] C [nth 4] R [nth 3] S [nth 1]]
+
+# # ## ### ##### ######## ############# #####################
+## size
+
+test [test-class]-size-1.0 {size, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store size X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store size"}
+
+test [test-class]-size-1.1 {size} -setup {
+    new-store
+    test-store id A
+} -body {
+    test-store size
+} -cleanup {
+    release-store
+} -result 1
+
+test [test-class]-size-1.2 {size} -setup {
+    new-store
+    test-store id A
+    test-store id B
+} -body {
+    test-store size
+} -cleanup {
+    release-store
+} -result 2
+
+# # ## ### ##### ######## ############# #####################
+## str
+
+test [test-class]-str-1.0 {str, wrong#args, not enough} -setup {
+    new-store
+} -body {
+    test-store str
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store str id"}
+
+test [test-class]-str-1.1 {str, wrong#args, too many} -setup {
+    new-store
+} -body {
+    test-store str S X
+} -cleanup {
+    release-store
+} -returnCodes error -result {wrong # args: should be "test-store str id"}
+
+test [test-class]-str-1.2 {str, unknown id} -setup {
+    new-store
+} -body {
+    test-store str 0
+} -cleanup {
+    release-store
+} -returnCodes error -result {Expected string id, got "0"}
+
+test [test-class]-str-1.3 {str, known} -setup {
+    new-store
+    test-store id S
+} -body {
+    test-store str [nth 1]
+} -cleanup {
+    release-store
+} -result S
+
+test [test-class]-str-1.4 {str, known} -setup {
+    new-store
+    test-store id S
+    test-store id A
+    test-store id R
+    test-store id C
+} -body {
+    test-store str [nth 3]
+} -cleanup {
+    release-store
+} -result R
+
+# # ## ### ##### ######## ############# #####################
+return

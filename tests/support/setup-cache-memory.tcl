@@ -2,14 +2,17 @@
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 
+proc store-class {} { lindex [split [test-class] /] 0 }
+
 proc new-store {} {
-    set b [atom::memory create mybackend]
-    return [atom::cache create myatom $b]
+    atom::memory create test-backend
+    [store-class] create test-store test-backend
+    return
 }
 
 proc release-store {} {
-    catch { myatom    destroy }
-    catch { mybackend destroy }
+    catch { test-store   destroy }
+    catch { test-backend destroy }
     return
 }
 

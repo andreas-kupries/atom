@@ -3,11 +3,12 @@
 # # ## ### ##### ######## ############# #####################
 
 proc new-store {} {
-    return [atom::memory create myatom]
+    [test-class] create test-store
+    return
 }
 
 proc release-store {} {
-    myatom destroy
+    test-store destroy
     return
 }
 

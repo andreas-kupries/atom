@@ -13,33 +13,33 @@
 
 # # ## ### ##### ######## ############# #####################
 
-test atom-cache-1.0 {new, wrong#args, not enough} -body {
+test [test-class]-1.0 {new, wrong#args, not enough} -body {
     atom::cache new
 } -returnCodes error -result {wrong # args: should be "atom::cache new backend"}
 
-test atom-cache-1.1 {new, wrong#args, too many} -body {
+test [test-class]-1.1 {new, wrong#args, too many} -body {
     atom::cache new B X
 } -returnCodes error -result {wrong # args: should be "atom::cache new backend"}
 
-test atom-cache-1.2 {create, wrong#args, not enough} -body {
+test [test-class]-1.2 {create, wrong#args, not enough} -body {
     atom::cache create foo
 } -returnCodes error -result {wrong # args: should be "atom::cache create foo backend"}
 
-test atom-cache-1.3 {create, wrong#args, too many} -body {
+test [test-class]-1.3 {create, wrong#args, too many} -body {
     atom::cache create foo B X
 } -returnCodes error -result {wrong # args: should be "atom::cache create foo backend"}
 
-test atom-cache-1.4 {constructor, create, existing command} -setup {
+test [test-class]-1.4 {constructor, create, existing command} -setup {
     atom::memory create X
-    atom::cache create myacache X
+    atom::cache create test-cache-store X
 } -body {
-    atom::cache create myacache X
+    atom::cache create test-cache-store X
 } -cleanup {
-    myacache destroy
+    test-cache-store destroy
     X destroy
-} -returnCodes error -result [already myacache]
+} -returnCodes error -result [already test-cache-store]
 
-test atom-cache-1.5 {constructor, create, existing command} -setup {
+test [test-class]-1.5 {constructor, create, existing command} -setup {
     atom::memory create X
 } -body {
     atom::cache create set X
@@ -47,119 +47,119 @@ test atom-cache-1.5 {constructor, create, existing command} -setup {
     X destroy
 } -returnCodes error -result [already set]
 
-test atom-cache-1.6 {constructor, create} -setup {
+test [test-class]-1.6 {constructor, create} -setup {
     set result {}
-    atom::memory create X
+    atom::memory create test-cache-backend
 } -body {
-    lappend result [atom::cache create myacache X]
-    lappend result [info commands ::myacache]
-    lappend result [myacache size]
+    lappend result [atom::cache create test-cache-store test-cache-backend]
+    lappend result [info commands ::test-cache-store]
+    lappend result [test-cache-store size]
 } -cleanup {
-    myacache destroy
-    X destroy
+    test-cache-store destroy
+    test-cache-backend destroy
     unset result
-} -result {::myacache ::myacache 0}
+} -result {::test-cache-store ::test-cache-store 0}
 
-test atom-cache-1.7 {constructor, new} -setup {
+test [test-class]-1.7 {constructor, new} -setup {
     set result {}
-    atom::memory create X
+    atom::memory create test-cache-backend
 } -body {
-    lappend result [set foo [atom::cache new X]]
+    lappend result [set foo [atom::cache new test-cache-backend]]
     lappend result [info commands ::$foo]
     lappend result [$foo size]
 } -cleanup {
     $foo destroy
-    X destroy
+    test-cache-backend destroy
     unset result foo
 } -match glob -result {::oo::Obj* ::oo::Obj* 0}
 
 # # ## ### ##### ######## ############# #####################
 
-test atom-cache-1.8 {exists, authoritative backend} -setup {
+test [test-class]-1.8 {exists, authoritative backend} -setup {
     new-store
-    mybackend id S
-    mybackend id A
-    mybackend id R
+    test-backend id S
+    test-backend id A
+    test-backend id R
     # cache doesn't know this.
 } -body {
-    myatom exists S
+    test-store exists S
 } -cleanup {
     release-store
 } -result 1
 
-test atom-cache-1.9 {names, authoritative backend} -setup {
+test [test-class]-1.9 {names, authoritative backend} -setup {
     new-store
-    mybackend id S
-    mybackend id A
-    mybackend id R
+    test-backend id S
+    test-backend id A
+    test-backend id R
     # cache doesn't know this.
 } -body {
-    lsort -dict [myatom names]
+    lsort -dict [test-store names]
 } -cleanup {
     release-store
 } -result {A R S}
 
-test atom-cache-1.10 {serialize, authoritative backend} -setup {
+test [test-class]-1.10 {serialize, authoritative backend} -setup {
     new-store
-    mybackend id S
-    mybackend id A
-    mybackend id R
+    test-backend id S
+    test-backend id A
+    test-backend id R
     # cache doesn't know this.
 } -body {
-    kt dictsort [myatom serialize]
+    kt dictsort [test-store serialize]
 } -cleanup {
     release-store
 } -result [list A [nth 2] R [nth 3] S [nth 1]]
 
-test atom-cache-1.11 {size, authoritative backend} -setup {
+test [test-class]-1.11 {size, authoritative backend} -setup {
     new-store
-    mybackend id S
-    mybackend id A
-    mybackend id R
+    test-backend id S
+    test-backend id A
+    test-backend id R
     # cache doesn't know this.
 } -body {
-    myatom size
+    test-store size
 } -cleanup {
     release-store
 } -result 3
 
-test atom-cache-1.12 {str, authoritative backend} -setup {
+test [test-class]-1.12 {str, authoritative backend} -setup {
     new-store
-    mybackend id S
-    mybackend id A
-    mybackend id R
+    test-backend id S
+    test-backend id A
+    test-backend id R
     # cache doesn't know this.
 } -body {
-    myatom str [nth 2]
+    test-store str [nth 2]
 } -cleanup {
     release-store
 } -result A
 
 # deserialize, load, merge
 
-test atom-cache-2.0 {deserialize visible in backend} -setup {
+test [test-class]-2.0 {deserialize visible in backend} -setup {
     new-store
-    myatom deserialize {z 0 a 3}
+    test-store deserialize {z 0 a 3}
 } -body {
-    kt dictsort [mybackend serialize]
+    kt dictsort [test-backend serialize]
 } -cleanup {
     release-store
 } -result {a 3 z 0}
 
-test atom-cache-2.1 {load visible in backend} -setup {
+test [test-class]-2.1 {load visible in backend} -setup {
     new-store
-    myatom load {z 0 a 3}
+    test-store load {z 0 a 3}
 } -body {
-    kt dictsort [mybackend serialize]
+    kt dictsort [test-backend serialize]
 } -cleanup {
     release-store
 } -result {a 3 z 0}
 
-test atom-cache-2.3 {merge visible in backend} -setup {
+test [test-class]-2.3 {merge visible in backend} -setup {
     new-store
-    myatom merge {z 0 a 3}
+    test-store merge {z 0 a 3}
 } -body {
-    kt dictsort [mybackend serialize]
+    kt dictsort [test-backend serialize]
 } -cleanup {
     release-store
 } -result [list a [nth 2] z [nth 1]]

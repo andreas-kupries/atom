@@ -4,7 +4,7 @@
 
 ## A number of shared test cases have different results, based on the
 ## internals of identifier generation.  The code here provides the
-## setup for atom::memory generation.
+## setup for the internals of atom::memory, and compatible.
 
 # # ## ### ##### ######## ############# #####################
 

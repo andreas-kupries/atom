@@ -1,7 +1,7 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## Tests for the atom::memory package.
+## Tests for the atom::cache package, memory backend
 
 kt check Tcl     8.5
 kt check tcltest 2
@@ -9,19 +9,20 @@ kt check tcltest 2
 kt require support TclOO
 
 kt local   support atom
-kt local   testing atom::memory
+kt local   support atom::memory
+kt local   testing atom::cache
 
 # # ## ### ##### ######## ############# #####################
 
-proc test-class {} { return atom::memory }
+proc test-class {} { return atom::cache/memory }
 
 # # ## ### ##### ######## ############# #####################
 
 kt source support/common.tcl
 kt source support/id-sequence-memory.tcl
-kt source support/setup-memory.tcl
+kt source support/setup-cache-memory.tcl
 
-kt source parts/memory.testsuite
+kt source parts/cache.testsuite
 kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
