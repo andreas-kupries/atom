@@ -4,7 +4,7 @@
 
 ## A number of shared test cases have different results, based on the
 ## internals of identifier generation.  The code here provides the
-## setup for atom::sqlite generation.
+## setup for the internals of atom::sqlite, and compatible.
 
 # # ## ### ##### ######## ############# #####################
 

@@ -1,7 +1,7 @@
 # -*- tcl -*- tcl.tk//DSL tcltest//EN//2.0 tcl.tk//DSL tcltest//EN//2.0
 ## (c) 2013 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## memory.test:  tests for the atom::memory package.
+## Tests for the atom::memory package.
 
 kt check Tcl     8.5
 kt check tcltest 2
@@ -13,26 +13,16 @@ kt local   testing atom::memory
 
 # # ## ### ##### ######## ############# #####################
 
-proc already {cmd} {
-    return "can't create object \"$cmd\": command already exists with that name"
-}
-
-proc badmethod {m real} {
-    set real [string map {{, or} { or}} [linsert [join $real {, }] end-1 or]]
-    return "unknown method \"$m\": must be $real"
-}
-
-# identification to put into names of shared test cases.
-proc who {} { return memory }
+proc test-class {} { return atom::memory }
 
 # # ## ### ##### ######## ############# #####################
-## Two testsuites, for the custom (instantiation) and shared APIs.
 
-kt source memory-setup.tcl
-kt source memory-idgen.tcl
+kt source support/common.tcl
+kt source support/id-sequence-memory.tcl
+kt source support/setup-memory.tcl
 
-kt source memory.testsuite
-kt source atom.testsuite
+kt source parts/memory.testsuite
+kt source parts/base.testsuite
 
 # # ## ### ##### ######## ############# #####################
 cleanupTests

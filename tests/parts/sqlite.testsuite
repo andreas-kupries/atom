@@ -13,71 +13,71 @@
 
 # # ## ### ##### ######## ############# #####################
 
-test atom-sqlite-1.0 {new, wrong#args, not enough} -body {
+test [test-class]-1.0 {new, wrong#args, not enough} -body {
     atom::sqlite new
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.1 {new, wrong#args, not enough} -body {
+test [test-class]-1.1 {new, wrong#args, not enough} -body {
     atom::sqlite new D
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.2 {new, wrong#args, too many} -body {
+test [test-class]-1.2 {new, wrong#args, too many} -body {
     atom::sqlite new D T X
 } -returnCodes error -result {wrong # args: should be "atom::sqlite new database table"}
 
-test atom-sqlite-1.3 {create, wrong#args, not enough} -body {
+test [test-class]-1.3 {create, wrong#args, not enough} -body {
     atom::sqlite create foo
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.4 {create, wrong#args, not enough} -body {
+test [test-class]-1.4 {create, wrong#args, not enough} -body {
     atom::sqlite create foo D
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.5 {create, wrong#args, too many} -body {
+test [test-class]-1.5 {create, wrong#args, too many} -body {
     atom::sqlite create foo D T X
 } -returnCodes error -result {wrong # args: should be "atom::sqlite create foo database table"}
 
-test atom-sqlite-1.6 {constructor, create, existing command} -setup {
-    sqlite3 DB :memory:
-    atom::sqlite create myasqlite DB foo
+test [test-class]-1.6 {constructor, create, existing command} -setup {
+    sqlite3 test-database :memory:
+    atom::sqlite create test-sqlite-store test-database foo
 } -body {
-    atom::sqlite create myasqlite DB foo
+    atom::sqlite create test-sqlite-store test-database foo
 } -cleanup {
-    myasqlite destroy
-    DB close
-} -returnCodes error -result [already myasqlite]
+    test-sqlite-store destroy
+    test-database close
+} -returnCodes error -result [already test-sqlite-store]
 
-test atom-sqlite-1.7 {constructor, create, existing command} -setup {
-    sqlite3 DB :memory:
+test [test-class]-1.7 {constructor, create, existing command} -setup {
+    sqlite3 test-database :memory:
 } -body {
-    atom::sqlite create set DB foo
+    atom::sqlite create set test-database foo
 } -cleanup {
-    DB close
+    test-database close
 } -returnCodes error -result [already set]
 
-test atom-sqlite-1.8 {constructor, create} -setup {
+test [test-class]-1.8 {constructor, create} -setup {
     set result {}
-    sqlite3 DB :memory:
+    sqlite3 test-database :memory:
 } -body {
-    lappend result [atom::sqlite create myasqlite DB foo]
-    lappend result [info commands ::myasqlite]
-    lappend result [myasqlite size]
+    lappend result [atom::sqlite create test-sqlite-store test-database foo]
+    lappend result [info commands ::test-sqlite-store]
+    lappend result [test-sqlite-store size]
 } -cleanup {
-    myasqlite destroy
-    DB close
+    test-sqlite-store destroy
+    test-database close
     unset result
-} -result {::myasqlite ::myasqlite 0}
+} -result {::test-sqlite-store ::test-sqlite-store 0}
 
-test atom-sqlite-1.9 {constructor, new} -setup {
+test [test-class]-1.9 {constructor, new} -setup {
     set result {}
-    sqlite3 DB :memory:
+    sqlite3 test-database :memory:
 } -body {
-    lappend result [set foo [atom::sqlite new DB foo]]
+    lappend result [set foo [atom::sqlite new test-database foo]]
     lappend result [info commands ::$foo]
     lappend result [$foo size]
 } -cleanup {
     $foo destroy
-    DB close
+    test-database close
     unset result foo
 } -match glob -result {::oo::Obj* ::oo::Obj* 0}
 
