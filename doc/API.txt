@@ -1,0 +1,29 @@
+
+Classes			Notes		Constructor arguments
+-------			-----		----------------------
+	atom		Virtual base
+	atom::memory	In-memory	none
+	atom::sqlite	Database	sqlite database + table name
+	atom::cache			backend atom instance to cache
+-------			-----		----------------------
+
+API	Name		Arguments		Results
+---	----		---------		-------
+	id		string		 -->	id
+	str		id		 -->	string
+	names		()		 -->	list (string)
+	exists		string		 -->	boolean
+	exists-id	id		 -->	boolean
+	size		()		 -->	integer
+	map		string id	 -->	()
+	clear		()		 -->	()
+	serialize	()		 -->	dict (string -> id)
+	deserialize	dict (str -> id) -->	()
+	load		dict (str -> id) -->	()
+	merge		dict (str -> id) -->	()
+---	----		---------		-------
+
+	<--	<==>	deserialize	(in)
+	-->	<==>	serialize	(out)
+	:=	<==>	load
+	+=	<==>	merge
