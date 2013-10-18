@@ -4,6 +4,18 @@
 ## Cache storage. Internally uses in-memory store.
 ## Backend store is configurable at construction time).
 
+# @@ Meta Begin
+# Package atom::cache 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/atom
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 

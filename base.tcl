@@ -7,6 +7,18 @@
 ## implement. It also provides standard APIs for the
 ## de(serialization) of atom stores.
 
+# @@ Meta Begin
+# Package atom 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/atom
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 

@@ -5,6 +5,18 @@
 ## Note, this does not use in-memory caching.
 ## If that is wanted see the cacher class.
 
+# @@ Meta Begin
+# Package atom::sqlite 0
+# Meta author      ?
+# Meta category    ?
+# Meta description ?
+# Meta location    http:/core.tcl.tk/akupries/atom
+# Meta platform    tcl
+# Meta require     ?
+# Meta subject     ?
+# Meta summary     ?
+# @@ Meta End
+
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 
