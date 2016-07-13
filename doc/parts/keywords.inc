@@ -1,0 +1,7 @@
+[comment {--- Standard keywords for all manpages in the module --}]
+[keywords deduplication]
+[keywords interning]
+[keywords storage]
+[keywords {string deduplication}]
+[keywords {string interning}]
+[keywords {string storage}]
