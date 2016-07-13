@@ -7,14 +7,18 @@
 
 # @@ Meta Begin
 # Package atom::sqlite 0
-# Meta author      ?
-# Meta category    ?
-# Meta description ?
+# Meta author      {Andreas Kupries}
+# Meta category    String internment, database
+# Meta description String interning via Sqlite database
 # Meta location    http:/core.tcl.tk/akupries/atom
 # Meta platform    tcl
-# Meta require     ?
-# Meta subject     ?
-# Meta summary     ?
+# Meta require     {Tcl 8.5-}
+# Meta require     TclOO
+# Meta require     atom
+# Meta require     dbutil
+# Meta require     sqlite3
+# Meta subject     {string internment} interning
+# Meta summary     String interning via Sqlite database
 # @@ Meta End
 
 # # ## ### ##### ######## ############# #####################

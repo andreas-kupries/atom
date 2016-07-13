@@ -6,14 +6,17 @@
 
 # @@ Meta Begin
 # Package atom::cache 0
-# Meta author      ?
-# Meta category    ?
-# Meta description ?
+# Meta author      {Andreas Kupries}
+# Meta category    String internment, database
+# Meta description Cache in front of arbitrary string interning backend
 # Meta location    http:/core.tcl.tk/akupries/atom
 # Meta platform    tcl
-# Meta require     ?
-# Meta subject     ?
-# Meta summary     ?
+# Meta require     {Tcl 8.5-}
+# Meta require     TclOO
+# Meta require     atom
+# Meta require     atom::memory
+# Meta subject     {string internment} interning
+# Meta summary     Cache in front of arbitrary string interning backend
 # @@ Meta End
 
 # # ## ### ##### ######## ############# #####################
@@ -51,7 +54,7 @@ oo::class create atom::cache {
     # intern the string, return its unique numeric identifier
     method id {string} {
 	if {![CACHE exists $string]} {
-	    # Using "map" here forces the mapping in cache to 
+	    # Using "map" here forces the mapping in the cache to 
 	    # mirror the mapping by the backend.
 	    return [CACHE map $string [BACKEND id $string]]
 	} else {

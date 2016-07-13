@@ -9,14 +9,15 @@
 
 # @@ Meta Begin
 # Package atom 0
-# Meta author      ?
-# Meta category    ?
-# Meta description ?
+# Meta author      {Andreas Kupries}
+# Meta category    String internment, database
+# Meta description Base class for string interning
 # Meta location    http:/core.tcl.tk/akupries/atom
 # Meta platform    tcl
-# Meta require     ?
-# Meta subject     ?
-# Meta summary     ?
+# Meta require     {Tcl 8.5-}
+# Meta require     TclOO
+# Meta subject     {string internment} interning
+# Meta summary     String interning
 # @@ Meta End
 
 # # ## ### ##### ######## ############# #####################
