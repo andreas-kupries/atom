@@ -1,0 +1,73 @@
+[comment {-*- tcl -*- doctools manpage}]
+[include parts/definitions.inc]
+[vset VERSION 1.1]
+[manpage_begin [vset LABEL_ATOM] [vset MAN_SECTION] [vset VERSION]]
+[include parts/module.inc]
+[require cmdr]
+[titledesc [vset TITLE_ATOM]]
+[description]
+[include parts/welcome.inc]
+
+While this package, from its name, looks like the public entrypoint of
+the system, it is [emph not]. This package is internal, providing the
+base class for all the others implementing actual storage backends.
+
+[para] The following sections are of interest only to developers
+intending to extend or modify the system, then. Everybody else can
+skip this document.
+
+[section {API to implement}]
+
+This sections lists and describes all the methods a derived class
+[emph has] to override to be a proper and functional string storage:
+
+[list_begin definitions]
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method id] [arg string]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method str] [arg id]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method names]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method exists] [arg string]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method exists-id] [arg id]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method size]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method map] [arg string] [arg id]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method clear]]
+
+[list_end]
+
+[section {API hooks}]
+
+This sections lists base class method a derived class [emph may]
+override. While they have implementations these are generic and may
+not be as efficient as possible for the derived class and its full
+access to its own datastructures.
+
+[list_begin definitions]
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method serialize]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method deserialize] [arg serial]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method load] [arg serial]]
+
+[comment {- - -- --- ----- -------- -------------}]
+[call [cmd <instance>] [method merge] [arg serial]]
+
+[list_end]
+[include parts/feedback.inc]
+[manpage_end]

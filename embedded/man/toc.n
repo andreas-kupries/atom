@@ -273,6 +273,9 @@ Database Class:	\\fB\\$3\\fR
 doc
 .RS
 .TP
+\fBatom\fR
+\fIfiles/atom\&.n\fR: Atom - Base class, common API
+.TP
 \fBatom-changes\fR
 \fIfiles/atom_changes\&.n\fR: Atom - Log of Changes
 .TP
@@ -287,6 +290,15 @@ doc
 .TP
 \fBatom-license\fR
 \fIfiles/atom_license\&.n\fR: Atom - License
+.TP
+\fBatom::cache\fR
+\fIfiles/atom_cache\&.n\fR: Atom - In-memory cache to place in front of any backend
+.TP
+\fBatom::memory\fR
+\fIfiles/atom_memory\&.n\fR: Atom - In-memory storage backend
+.TP
+\fBatom::sqlite\fR
+\fIfiles/atom_sqlite\&.n\fR: Atom - Sqlite storage backend
 .TP
 \fBatom_development\fR
 \fIfiles/atom_howto_development\&.n\fR: Atom - The Developer's Guide

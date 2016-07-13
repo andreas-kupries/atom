@@ -67,7 +67,7 @@ oo::class create atom::cache {
     # check cache first, then backend, lift mapping.
     method str {id} {
 	if {![CACHE exists-id $id]} {
-	    # Using "map" here forces the mapping in cache to 
+	    # Using "map" here forces the mapping in the cache to
 	    # mirror the mapping by the backend.
 	    set string [BACKEND str $id]
 	    CACHE map $string $id

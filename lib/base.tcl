@@ -126,7 +126,6 @@ oo::class create atom {
 	my Error "$wh conflict for \"$val\", maps to \"$old\" != \"$new\"" \
 	    MAP CONFLICT $wx $val $new $old
     }
-
 }
 
 # # ## ### ##### ######## ############# #####################
