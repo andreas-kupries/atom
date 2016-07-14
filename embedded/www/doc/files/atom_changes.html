@@ -105,7 +105,7 @@
 | <a href="../toc.html">Table Of Contents</a>
 | <a href="../../index.html">Keyword Index</a>
  ] <hr>
-<h1 class="title">atom-changes(n) 0 doc &quot;Atom. Packages for string interning and deduplication&quot;</h1>
+<h1 class="title">atom-changes(n) 1 doc &quot;Atom. Packages for string interning and deduplication&quot;</h1>
 <div id="name" class="section"><h2><a name="name">Name</a></h2>
 <p>atom-changes - Atom - Log of Changes</p>
 </div>
@@ -113,7 +113,11 @@
 <ul class="toc">
 <li class="section"><a href="#toc">Table Of Contents</a></li>
 <li class="section"><a href="#section1">Description</a></li>
-<li class="section"><a href="#section2">Changes</a></li>
+<li class="section"><a href="#section2">Changes</a>
+<ul>
+<li class="subsection"><a href="#subsection1">Changes for version 1</a></li>
+</ul>
+</li>
 <li class="section"><a href="#section3">Related Documents</a></li>
 <li class="section"><a href="#section4">Bugs, Ideas, Feedback</a></li>
 <li class="section"><a href="#keywords">Keywords</a></li>
@@ -127,6 +131,21 @@
 underwent from version to version.</p>
 </div>
 <div id="section2" class="section"><h2><a name="section2">Changes</a></h2>
+<div id="subsection1" class="subsection"><h3><a name="subsection1">Changes for version 1</a></h3>
+<p>This is the first release of atom.
+The changes therefore describe the initial features of the system.</p>
+<p>In detail:</p>
+<ol class="enumerated">
+<li><p>atom requires Tcl 8.5 or higher.
+       Tcl 8.4 or less is not supported.</p></li>
+<li><p>The project provides a base class declaring the API of string
+       interning classes, and three implementations of that API.</p></li>
+<li><p>The provided implementations store strings in an sqlite
+       database, or in memory. One of the in-memory classes is written
+       to be a front-end cache for any other string internming class
+       following the API declared here.</p></li>
+</ol>
+</div>
 </div>
 <div id="section3" class="section"><h2><a name="section3">Related Documents</a></h2>
 <ol class="enumerated">

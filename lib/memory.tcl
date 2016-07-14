@@ -1,10 +1,10 @@
 # -*- tcl -*-
-## (c) 2013 Andreas Kupries
+## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## In-memory atom storage i.e. string internement.
 
 # @@ Meta Begin
-# Package atom::memory 0
+# Package atom::memory 1
 # Meta author      {Andreas Kupries}
 # Meta category    String internment, database
 # Meta description String interning in memory
@@ -132,5 +132,5 @@ oo::class create atom::memory {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide atom::memory 0
+package provide atom::memory 1
 return

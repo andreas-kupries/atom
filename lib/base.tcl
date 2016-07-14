@@ -1,5 +1,5 @@
 # -*- tcl -*-
-## (c) 2013 Andreas Kupries
+## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## Base class for atom storage i.e. string internement.
 ##
@@ -8,7 +8,7 @@
 ## de(serialization) of atom stores.
 
 # @@ Meta Begin
-# Package atom 0
+# Package atom 1
 # Meta author      {Andreas Kupries}
 # Meta category    String internment, database
 # Meta description Base class for string interning
@@ -129,5 +129,5 @@ oo::class create atom {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide atom 0
+package provide atom 1
 return

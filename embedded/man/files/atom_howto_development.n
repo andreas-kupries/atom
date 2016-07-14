@@ -3,7 +3,7 @@
 '\" Copyright (c) 2013-2016 Andreas Kupries
 '\" Copyright (c) 2013-2016 Documentation, Andreas Kupries
 '\"
-.TH "atom_development" n 0 doc "Atom\&. Packages for string interning and deduplication"
+.TH "atom_development" n 1 doc "Atom\&. Packages for string interning and deduplication"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"

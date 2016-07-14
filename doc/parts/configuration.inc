@@ -8,4 +8,4 @@
 [vset PTITLE Atom]
 [vset REPOSITORY https:/core.tcl.tk/akupries/atom]
 [vset VC_TYPE fossil]
-[vset PROJ_VERSION 0]
+[vset PROJ_VERSION 1]

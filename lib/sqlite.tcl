@@ -1,12 +1,12 @@
 # -*- tcl -*-
-## (c) 2013 Andreas Kupries
+## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## sqlite based atom storage i.e. string internement.
 ## Note, this does not use in-memory caching.
 ## If that is wanted see the cacher class.
 
 # @@ Meta Begin
-# Package atom::sqlite 0
+# Package atom::sqlite 1
 # Meta author      {Andreas Kupries}
 # Meta category    String internment, database
 # Meta description String interning via Sqlite database
@@ -243,5 +243,5 @@ oo::class create atom::sqlite {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide atom::sqlite 0
+package provide atom::sqlite 1
 return

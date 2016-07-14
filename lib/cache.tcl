@@ -1,11 +1,11 @@
 # -*- tcl -*-
-## (c) 2013 Andreas Kupries
+## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
 ## Cache storage. Internally uses in-memory store.
 ## Backend store is configurable at construction time).
 
 # @@ Meta Begin
-# Package atom::cache 0
+# Package atom::cache 1
 # Meta author      {Andreas Kupries}
 # Meta category    String internment, database
 # Meta description Cache in front of arbitrary string interning backend
@@ -139,5 +139,5 @@ oo::class create atom::cache {
 }
 
 # # ## ### ##### ######## ############# #####################
-package provide atom::cache 0
+package provide atom::cache 1
 return

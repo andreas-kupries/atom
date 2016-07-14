@@ -3,7 +3,7 @@
 '\" Copyright (c) 2013-2016 Andreas Kupries
 '\" Copyright (c) 2013-2016 Documentation, Andreas Kupries
 '\"
-.TH "atom-changes" n 0 doc "Atom\&. Packages for string interning and deduplication"
+.TH "atom-changes" n 1 doc "Atom\&. Packages for string interning and deduplication"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -283,6 +283,23 @@ For availability please read \fIAtom - How To Get The Sources\fR\&.
 This document provides an overview of the changes \fBatom\fR
 underwent from version to version\&.
 .SH CHANGES
+.SS "CHANGES FOR VERSION 1"
+This is the first release of atom\&.
+The changes therefore describe the initial features of the system\&.
+.PP
+In detail:
+.IP [1]
+atom requires Tcl 8\&.5 or higher\&.
+Tcl 8\&.4 or less is not supported\&.
+.IP [2]
+The project provides a base class declaring the API of string
+interning classes, and three implementations of that API\&.
+.IP [3]
+The provided implementations store strings in an sqlite
+database, or in memory\&. One of the in-memory classes is written
+to be a front-end cache for any other string internming class
+following the API declared here\&.
+.PP
 .SH "RELATED DOCUMENTS"
 .IP [1]
 \fIAtom - Introduction to the project\fR
