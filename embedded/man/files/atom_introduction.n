@@ -292,9 +292,9 @@ as shown below:
 .PS
 .nf
 +-----------------------------------------+
-|                  atom                   |
-+-----------------------------------------+
 | atom::memory, atom::sqlite, atom::cache |
++-----------------------------------------+
+|                  atom                   |
 +-----------------------------------------+
 
 .fi
@@ -302,14 +302,14 @@ as shown below:
 .PP
 Note that:
 .IP \(bu
-Packages marked with a dashed blue border are private\&.
+Packages marked with a dashed border are private\&.
 .IP \(bu
 Packages marked with an unbroken blue border are fully public\&.
 .IP \(bu
-The topmost layer contains only a single package,
-\fBatom\fR, the base class for all others\&.
+The topmost layer contains the various oublic storage backends\&.
 .IP \(bu
-The other layer contains the various storage backends\&.
+The other, supporting, layer contains only a single package,
+\fBatom\fR, the base class for all others\&.
 .PP
 .PP
 The dependencies between the packages are very
@@ -317,9 +317,11 @@ straight-forward:
 .PP
 .PS
 .nf
-atom::cache <-\\-----------------\\
-               \\- atom::memory <-X- atom
-atom::sqlite <------------------/
+atom::cache <----------------\\
+            <                 \\
+             \\- atom::memory <-X- atom
+                              /
+atom::sqlite <---------------/
 
 .fi
 .PE

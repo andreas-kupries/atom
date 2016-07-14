@@ -1,3 +1,5 @@
-atom::cache <-\-----------------\
-               \- atom::memory <-X- atom
-atom::sqlite <------------------/
+atom::cache <----------------\
+            <                 \
+             \- atom::memory <-X- atom
+                              /
+atom::sqlite <---------------/

@@ -1,5 +1,5 @@
 # -*- tcl -*- tcl.tk//DSL diagram//EN//1.0
-# Parser Tools Architecture Diagram
+# Atom Architecture Diagram
 
 set counter 0
 if {![info exists mark]} { set mark -1 }
@@ -19,7 +19,7 @@ proc public {args} {
     {*}$args color blue stroke 2
 }
 
-proc partial {args} {
+proc private {args} {
     {*}$args dashed
 }
 
@@ -35,44 +35,23 @@ down
 set boxwidth [100 mm]
 set movelength [5 mm]
 
-set M [area "Main"             height [20 mm]] ; move
-set E [area "Entities"         height [30 mm]] ; move
-set S [area "Support Packages" height [38 mm]]
+set M [area "Main"         height [25 mm]] ; move
+set S [area "Support"      height [25 mm]]
 
 block {
     set fillcolor white
     set boxheight [10 mm]
     set boxwidth  [20 mm]
 
-    public xbox "cmdr"
-} at $M
-
-block {
-    east
-    set fillcolor white
-    set boxheight [10 mm]
-    set boxwidth  [20 mm]
-
-    xbox "util" ; move
-    xbox "validate" ; move
-    public xbox "validate::common" width [40 mm]
-    down ; move ; move ; west
-
-    public xbox "help::sql" ; move
-    public xbox "help::json" ; move
-    xbox "help"
+    private xbox "atom"
 } at $S
 
 block {
     set fillcolor white
     set boxheight [10 mm]
-    set boxwidth  [20 mm]
+    set boxwidth  [28 mm]
     east
-
-    xbox "actor" ; down ; move
-    xbox "private" 
-    group { west ; move ; xbox "officer" }
-    east ; move
-    partial public xbox "config" ; move
-    partial public xbox "parameter"
-} at $E
+    public xbox "atom::memory" ; move
+    public xbox "atom::sqlite" ; move
+    public xbox "atom::cache"
+} at $M

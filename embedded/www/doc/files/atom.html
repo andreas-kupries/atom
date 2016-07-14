@@ -136,9 +136,9 @@
 <li><a href="#7"><b class="cmd">&lt;instance&gt;</b> <b class="method">map</b> <i class="arg">string</i> <i class="arg">id</i></a></li>
 <li><a href="#8"><b class="cmd">&lt;instance&gt;</b> <b class="method">clear</b></a></li>
 <li><a href="#9"><b class="cmd">&lt;instance&gt;</b> <b class="method">serialize</b></a></li>
-<li><a href="#10"><b class="cmd">&lt;instance&gt;</b> <b class="method">deserialize</b> <i class="arg">serial</i></a></li>
-<li><a href="#11"><b class="cmd">&lt;instance&gt;</b> <b class="method">load</b> <i class="arg">serial</i></a></li>
-<li><a href="#12"><b class="cmd">&lt;instance&gt;</b> <b class="method">merge</b> <i class="arg">serial</i></a></li>
+<li><a href="#10"><b class="cmd">&lt;instance&gt;</b> <b class="method">deserialize</b> <i class="arg">serialization</i></a></li>
+<li><a href="#11"><b class="cmd">&lt;instance&gt;</b> <b class="method">load</b> <i class="arg">serialization</i></a></li>
+<li><a href="#12"><b class="cmd">&lt;instance&gt;</b> <b class="method">merge</b> <i class="arg">serialization</i></a></li>
 </ul>
 </div>
 </div>
@@ -157,21 +157,46 @@ skip this document.</p>
 <em>has</em> to override to be a proper and functional string storage:</p>
 <dl class="definitions">
 <dt><a name="1"><b class="cmd">&lt;instance&gt;</b> <b class="method">id</b> <i class="arg">string</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to add the specified <i class="arg">string</i> to
+the instance, and return its unique numeric identifier as the result
+of the method.</p>
+<p>Multiple calls of this method for the same string have to return
+the same identifier.</p></dd>
 <dt><a name="2"><b class="cmd">&lt;instance&gt;</b> <b class="method">str</b> <i class="arg">id</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to map the specified numeric <i class="arg">id</i>
+back to its string, and return that string as the result of the
+method.</p>
+<p>An error must be thrown if the <i class="arg">id</i> is not known to the
+instance.</p></dd>
 <dt><a name="3"><b class="cmd">&lt;instance&gt;</b> <b class="method">names</b></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to return a list of all strings which
+have been interned into the instance.</p></dd>
 <dt><a name="4"><b class="cmd">&lt;instance&gt;</b> <b class="method">exists</b> <i class="arg">string</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to test if the specified <i class="arg">string</i>
+has been interned into the instance and return a boolean flag as the
+result of the method.</p>
+<p>The result has to be <b class="const">true</b> if the string is known, and
+<b class="const">false</b> otherwise.</p></dd>
 <dt><a name="5"><b class="cmd">&lt;instance&gt;</b> <b class="method">exists-id</b> <i class="arg">id</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to test if the specified numeric
+<i class="arg">id</i> is known to the instance and return a boolean flag as the
+result of the method.</p>
+<p>The result has to be <b class="const">true</b> if the id is known, and
+<b class="const">false</b> otherwise.</p></dd>
 <dt><a name="6"><b class="cmd">&lt;instance&gt;</b> <b class="method">size</b></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to return the number of interned
+strings known to the instance.</p></dd>
 <dt><a name="7"><b class="cmd">&lt;instance&gt;</b> <b class="method">map</b> <i class="arg">string</i> <i class="arg">id</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to add the specified <i class="arg">string</i> to
+the instance and force an association with the specified numeric
+<i class="arg">id</i>.</p>
+<p>The result of the method has to be the empty string.</p>
+<p>An error has to be thrown if the <i class="arg">id</i> is already used for a
+different string.</p></dd>
 <dt><a name="8"><b class="cmd">&lt;instance&gt;</b> <b class="method">clear</b></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to drop all string/id mappings from
+the instance.  After this method has run the instance must be empty.</p>
+<p>The result of this method must be the empty string.</p></dd>
 </dl>
 </div>
 <div id="section3" class="section"><h2><a name="section3">API hooks</a></h2>
@@ -181,13 +206,31 @@ not be as efficient as possible for the derived class and its full
 access to its own datastructures.</p>
 <dl class="definitions">
 <dt><a name="9"><b class="cmd">&lt;instance&gt;</b> <b class="method">serialize</b></a></dt>
-<dd></dd>
-<dt><a name="10"><b class="cmd">&lt;instance&gt;</b> <b class="method">deserialize</b> <i class="arg">serial</i></a></dt>
-<dd></dd>
-<dt><a name="11"><b class="cmd">&lt;instance&gt;</b> <b class="method">load</b> <i class="arg">serial</i></a></dt>
-<dd></dd>
-<dt><a name="12"><b class="cmd">&lt;instance&gt;</b> <b class="method">merge</b> <i class="arg">serial</i></a></dt>
-<dd></dd>
+<dd><p>This method's implementation has to serialize the content of the
+instance, i.e. the string-to-id map and return it as the result of the
+method.</p>
+<p>The result has to be a Tcl dictionary with the strings as keys
+and the associated identifiers as the values.</p></dd>
+<dt><a name="10"><b class="cmd">&lt;instance&gt;</b> <b class="method">deserialize</b> <i class="arg">serialization</i></a></dt>
+<dd><p>This method's implementation has to take a <i class="arg">serialization</i> as
+generated by method <b class="method">serialize</b> and add it to the instance.
+It has to use the semantics of method <b class="method">map</b> for this, to
+preserve the exact string/id mapping found in the input. On the
+flip-side this means that existing mappings may interfere, in that case an
+error has to be thrown.</p>
+<p>The result of the method has to be the empty string.</p></dd>
+<dt><a name="11"><b class="cmd">&lt;instance&gt;</b> <b class="method">load</b> <i class="arg">serialization</i></a></dt>
+<dd><p>This method's implementation has to take a <i class="arg">serialization</i> as
+generated by method <b class="method">serialize</b> and have it replace the
+previous content of the instance.</p>
+<p>The result of the method has to be the empty string.</p></dd>
+<dt><a name="12"><b class="cmd">&lt;instance&gt;</b> <b class="method">merge</b> <i class="arg">serialization</i></a></dt>
+<dd><p>This method's implementation has to take a <i class="arg">serialization</i> as
+generated by method <b class="method">serialize</b> and add the strings it
+contains to the instance, per the semantics of method <b class="method">id</b>.</p>
+<p>The ids found in the <i class="arg">serialization</i> do not matter and have
+to be ignored.</p>
+<p>The result of the method has to be the empty string.</p></dd>
 </dl>
 </div>
 <div id="section4" class="section"><h2><a name="section4">Bugs, Ideas, Feedback</a></h2>

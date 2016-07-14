@@ -8,14 +8,14 @@ as shown below:
 
 [list_begin itemized]
 
-[item] Packages marked with a dashed blue border are private.
+[item] Packages marked with a dashed border are private.
 
 [item] Packages marked with an unbroken blue border are fully public.
 
-[item] The topmost layer contains only a single package,
-[package [vset PROJECT]], the base class for all others.
+[item] The topmost layer contains the various oublic storage backends.
 
-[item] The other layer contains the various storage backends.
+[item] The other, supporting, layer contains only a single package,
+[package [vset PROJECT]], the base class for all others.
 [list_end]
 
 [para] The dependencies between the packages are very

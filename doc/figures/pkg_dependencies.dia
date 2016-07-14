@@ -7,77 +7,27 @@ source [file join [file dirname [file normalize [info script]]] dsl_dependencies
 ## ====================================================================
 ## Dependencies, bottom-up, one procedure per package.
 
-proc actor     {} { box cmdr::actor                            }
-proc util      {} { box cmdr::util                             }
-proc vcommon   {} { box cmdr::validate::common width [grid 15] color blue stroke 2 }
-proc parameter {} { box cmdr::parameter        width [grid 10] color blue stroke 2 dashed }
+proc sqlite     {} { box atom::sqlite color blue stroke 2 }
+proc cache      {} { box atom::cache  color blue stroke 2 }
 
-proc validate {} {
-    box cmdr::validate width [grid 9]
-    group { down ; ---> ; vcommon }
+proc memory {} {
+    box atom::memory color blue stroke 2 width [grid 9]
+    group { down ; --- ; l ; --- 3 ; r ; ---> ; cache }
 }
 
-proc help {} {
-    box cmdr::help
-    group { down ; ---> ; util }
-}
-
-proc help_json {} {
-    box cmdr::help::json width [grid 10] color blue stroke 2
-    group { down ; ---> 16 ; help }
-}
-
-proc help_sql {} {
-    box cmdr::help::sql width [grid 10] color blue stroke 2
-    group { down ; --- ; l ; --- 4.25 ; r ; ---> 14 ; # help
+proc atom {} {
+    box atom
+    group { down ; ---> 3 ; memory }
+    group { down ; --- ; l ; --- 4 ; r ; ---> 6 ; #cache
     }
-}
-
-proc help_tcl {} {
-    box cmdr::help::tcl width [grid 10] color blue stroke 2
-    group { down ; --- 2 ; l ; --- 9.5 ; r ; ---> 13 ; # help
-    }
-}
-
-proc config {} {
-    box cmdr::config color blue stroke 2 dashed
-    group { down ; --- ; l ; --- 5 ; r ; ---> ; parameter }
-    group { down ; ---> 3 ; validate }
-    group { down ; --- ; r ; --- 4.5 ; l ; ---> ; # help
-    }
-}
-
-proc private {} {
-    box cmdr::private
-    group { down ; --- ; l ; --- 5 ; r ; ---> ; actor }
-    group { down ; ---> 3 ; config }
-}
-
-proc officer {} {
-    box cmdr::officer
-    group { down ; ---> 3 ; private }
-    group { down ; --- ; l ; --- 6 ; r ; ---> 6 ; #actor
-    }
-}
-
-proc cmdr {} {
-    box cmdr color blue stroke 2
-    group { down ; ---> ; officer }
+    group { down ; --- ; r ; --- 3 ; l ; ---> 6 ; sqlite }
 }
 
 ## ====================================================================
 
 proc layout {} {
     east
-    cmdr
-    move
-    move
-    help_json
-    move
-    help_sql
-    move
-    help_tcl
-    move
+    atom
 }
 
 ## ====================================================================
