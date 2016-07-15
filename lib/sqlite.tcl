@@ -15,6 +15,8 @@
 # Meta require     {Tcl 8.5-}
 # Meta require     TclOO
 # Meta require     atom
+# Meta require     debug
+# Meta require     debug::caller
 # Meta require     dbutil
 # Meta require     sqlite3
 # Meta subject     {string internment} interning
@@ -29,6 +31,14 @@ package require TclOO
 package require atom
 package require dbutil
 package require sqlite3
+package require debug
+package require debug::caller
+
+# # ## ### ##### ######## ############# #####################
+
+debug define atom/sqlite
+debug level  atom/sqlite
+debug prefix atom/sqlite {[debug caller] | }
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -49,6 +59,7 @@ oo::class create atom::sqlite {
     ## Lifecycle.
 
     constructor {database table} {
+	debug.atom/sqlite {}
 	# Make the database available as a local command, under a
 	# fixed name. No need for an instance variable and resolution.
 	interp alias {} [self namespace]::DB {} $database
@@ -63,6 +74,7 @@ oo::class create atom::sqlite {
     # id: string -> integer
     # intern the string, return its unique numeric identifier
     method id {string} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    if {[DB exists $sql_toid]} {
 		return [DB onecolumn $sql_toid]
@@ -77,6 +89,7 @@ oo::class create atom::sqlite {
     # str: integer -> string
     # map numeric identifier back to its string
     method str {id} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    if {![DB exists $sql_tostr]} {
 		my Error "Expected string id, got \"$id\"" BAD ID $id
@@ -88,6 +101,7 @@ oo::class create atom::sqlite {
     # names () -> list(string)
     # query set of interned strings.
     method names {} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    return [DB eval $sql_names]
 	}
@@ -96,6 +110,7 @@ oo::class create atom::sqlite {
     # exists: string -> boolean
     # query if string is known/interned
     method exists {string} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    DB exists $sql_toid
 	}
@@ -104,6 +119,7 @@ oo::class create atom::sqlite {
     # exists-id: id -> boolean
     # query if id is known/interned
     method exists-id {id} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    DB exists $sql_tostr
 	}
@@ -111,6 +127,7 @@ oo::class create atom::sqlite {
 
     # size () -> integer
     method size {} {
+	debug.atom/sqlite {}
 	variable size
 	if {[info exists size]} { return $size }
 	DB transaction {
@@ -123,6 +140,7 @@ oo::class create atom::sqlite {
     # intern the string, force the associated identifier.
     # throws error on conflict with existing string/identifier.
     method map {string id} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    if {[DB exists $sql_toid]} {
 		set knownid [DB onecolumn $sql_toid]
@@ -154,6 +172,7 @@ oo::class create atom::sqlite {
     # clear () -> ()
     # Remove all known mappings.
     method clear {} {
+	debug.atom/sqlite {}
 	variable size ; unset -nocomplain size
 	DB transaction {
 	    DB eval $sql_clear
@@ -167,11 +186,13 @@ oo::class create atom::sqlite {
 
     # serialize: () -> dict (string -> identifier)
     method serialize {} {
+	debug.atom/sqlite {}
 	return [DB eval $sql_serial]
     }
 
     # deserialize: dict (string -> identifier) -> ()
     method deserialize {serial} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    dict for {string id} $serial {
 		my map $string $id
@@ -182,6 +203,7 @@ oo::class create atom::sqlite {
 
     # load: dict (string -> identifier) -> ()
     method load {serial} {
+	debug.atom/sqlite {}
 	variable size ; unset -nocomplain size
 	DB transaction {
 	    DB eval $sql_clear
@@ -194,6 +216,7 @@ oo::class create atom::sqlite {
 
     # merge: dict (string -> identifier) -> ()
     method merge {serial} {
+	debug.atom/sqlite {}
 	DB transaction {
 	    dict for {string _} $serial {
 		my id $string
@@ -206,6 +229,7 @@ oo::class create atom::sqlite {
     ## Internals
 
     method InitializeSchema {table} {
+	debug.atom/sqlite {}
 	lappend map <<table>> $table
 
 	set fqndb [self namespace]::DB
@@ -234,6 +258,7 @@ oo::class create atom::sqlite {
     }
 
     method Def {var sql} {
+	debug.atom/sqlite {}
 	upvar 1 map map
 	set $var [string map $map $sql]
 	return

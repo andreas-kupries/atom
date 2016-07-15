@@ -16,6 +16,8 @@
 # Meta platform    tcl
 # Meta require     {Tcl 8.5-}
 # Meta require     TclOO
+# Meta require     debug
+# Meta require     debug::caller
 # Meta subject     {string internment} interning
 # Meta summary     String interning
 # @@ Meta End
@@ -25,6 +27,14 @@
 
 package require Tcl 8.5
 package require TclOO
+package require debug
+package require debug::caller
+
+# # ## ### ##### ######## ############# #####################
+
+debug define atom
+debug level  atom
+debug prefix atom {[debug caller] | }
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -77,10 +87,13 @@ oo::class create atom {
 
     # serialize: () -> dict (string -> identifier)
     method serialize {} {
+	debug.atom {}
 	set serial {}
 	foreach string [my names] {
 	    dict set serial $string [my id $string]
 	}
+
+	debug.atom {==> ($serial)}
 	return $serial
     }
 
@@ -88,24 +101,33 @@ oo::class create atom {
 
     # deserialize: dict (string -> identifier) -> ()
     method deserialize {serial} {
+	debug.atom {}
 	dict for {string id} $serial {
 	    my map $string $id
 	}
+
+	debug.atom {/done}
 	return
     }
 
     # load: dict (string -> identifier) -> ()
     method load {serial} {
+	debug.atom {}
 	my clear
 	my deserialize $serial
+
+	debug.atom {/done}
 	return
     }
 
     # merge: dict (string -> identifier) -> ()
     method merge {serial} {
+	debug.atom {}
 	dict for {string _} $serial {
 	    my id $string
 	}
+
+	debug.atom {/done}
 	return
     }
 
@@ -113,14 +135,17 @@ oo::class create atom {
     ## Internal helpers
 
     method Error {text args} {
+	debug.atom {}
 	return -code error -errorcode [list ATOM {*}$args] $text
     }
 
     method APIerror {api} {
+	debug.atom {}
 	my Error "Unimplemented API $api" API MISSING $api
     }
 
     method MAPerror {what val old new} {
+	debug.atom {}
 	set wx [string toupper $what]
 	set wh [string totitle $what]
 	my Error "$wh conflict for \"$val\", maps to \"$old\" != \"$new\"" \

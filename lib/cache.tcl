@@ -15,6 +15,8 @@
 # Meta require     TclOO
 # Meta require     atom
 # Meta require     atom::memory
+# Meta require     debug
+# Meta require     debug::caller
 # Meta subject     {string internment} interning
 # Meta summary     Cache in front of arbitrary string interning backend
 # @@ Meta End
@@ -26,6 +28,14 @@ package require Tcl 8.5
 package require TclOO
 package require atom
 package require atom::memory
+package require debug
+package require debug::caller
+
+# # ## ### ##### ######## ############# #####################
+
+debug define atom/cache
+debug level  atom/cache
+debug prefix atom/cache {[debug caller] | }
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -37,6 +47,7 @@ oo::class create atom::cache {
     ## Lifecycle.
 
     constructor {backend} {
+	debug.atom/cache {}
 	# Make the backend available as a local command, under a fixed
 	# name. No need for an instance variable and resolution.
 	interp alias {} [self namespace]::BACKEND {} $backend
@@ -53,6 +64,7 @@ oo::class create atom::cache {
     # id: string -> integer
     # intern the string, return its unique numeric identifier
     method id {string} {
+	debug.atom/cache {}
 	if {![CACHE exists $string]} {
 	    # Using "map" here forces the mapping in the cache to 
 	    # mirror the mapping by the backend.
@@ -66,6 +78,7 @@ oo::class create atom::cache {
     # map numeric identifier back to its string.
     # check cache first, then backend, lift mapping.
     method str {id} {
+	debug.atom/cache {}
 	if {![CACHE exists-id $id]} {
 	    # Using "map" here forces the mapping in the cache to
 	    # mirror the mapping by the backend.
@@ -88,6 +101,7 @@ oo::class create atom::cache {
     # query if string is known/interned
     # check cache first, then the authoritative source.
     method exists {string} {
+	debug.atom/cache {}
 	set has [CACHE exists $string]
 	if {$has} { return $has }
 	return [BACKEND exists $string]
@@ -97,6 +111,7 @@ oo::class create atom::cache {
     # query if id is known/interned
     # check cache first, then the authoritative source.
     method exists-id {id} {
+	debug.atom/cache {}
 	set has [CACHE exists-id $id]
 	if {$has} { return $has }
 	return [BACKEND exists-id $id]
@@ -112,6 +127,7 @@ oo::class create atom::cache {
     # intern the string, force the associated identifier.
     # throws error on conflict with existing string/identifier.
     method map {string id} {
+	debug.atom/cache {}
 	# Works because the cached mapping mirrors the backend (see
 	# method [id] above).
 	BACKEND map $string $id
@@ -122,6 +138,7 @@ oo::class create atom::cache {
     # clear () -> ()
     # Remove all known mappings.
     method clear {} {
+	debug.atom/cache {}
 	BACKEND clear
 	CACHE   clear
 	return

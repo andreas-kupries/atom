@@ -13,6 +13,8 @@
 # Meta require     {Tcl 8.5-}
 # Meta require     TclOO
 # Meta require     atom
+# Meta require     debug
+# Meta require     debug::caller
 # Meta subject     {string internment} interning
 # Meta summary     String interning in memory
 # @@ Meta End
@@ -23,6 +25,14 @@
 package require Tcl 8.5
 package require TclOO
 package require atom
+package require debug
+package require debug::caller
+
+# # ## ### ##### ######## ############# #####################
+
+debug define atom/memory
+debug level  atom/memory
+debug prefix atom/memory {[debug caller] | }
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -40,7 +50,10 @@ oo::class create atom::memory {
     # # ## ### ##### ######## #############
     ## Lifecycle.
 
-    constructor {} { my clear }
+    constructor {} {
+	debug.atom/memory {}
+	my clear
+    }
 
     # # ## ### ##### ######## #############
     ## API. Implementation of inherited virtual methods.
@@ -48,6 +61,7 @@ oo::class create atom::memory {
     # id: string -> integer
     # intern the string, return its unique numeric identifier
     method id {string} {
+	debug.atom/memory {}
 	if {![dict exists $myid $string]} {
 	    set id [dict size $myid]
 	    # Avoid conflicts with existing mappings. Such can occur
@@ -64,6 +78,7 @@ oo::class create atom::memory {
     # str: integer -> string
     # map numeric identifier back to its string
     method str {id} {
+	debug.atom/memory {}
 	if {![dict exists $mystring $id]} {
 	    my Error "Expected string id, got \"$id\"" BAD ID $id
 	}
@@ -72,23 +87,36 @@ oo::class create atom::memory {
 
     # names () -> list(string)
     # query set of interned strings.
-    method names {} { dict keys $myid }
+    method names {} {
+	debug.atom/memory {}
+	dict keys $myid
+    }
 
     # exists: string -> boolean
     # query if string is known/interned
-    method exists {string} { dict exists $myid $string }
+    method exists {string} {
+	debug.atom/memory {}
+	dict exists $myid $string
+    }
 
     # exists-id: id -> boolean
     # query if id is known/interned
-    method exists-id {id} { dict exists $mystring $id }
+    method exists-id {id} {
+	debug.atom/memory {}
+	dict exists $mystring $id
+    }
 
     # size () -> integer
-    method size {} { dict size $myid }
+    method size {} {
+	debug.atom/memory {}
+	dict size $myid
+    }
 
     # map: string, integer -> ()
     # intern the string, force the associated identifier.
     # throws error on conflict with existing string/identifier.
     method map {string id} {
+	debug.atom/memory {}
 	# Check for conflicts with existing id or string.
 	if {[dict exists $myid $string] &&
 	    ([set knownid [dict get $myid $string]] != $id)} {
@@ -106,6 +134,7 @@ oo::class create atom::memory {
     # clear () -> ()
     # Remove all known mappings.
     method clear {} {
+	debug.atom/memory {}
 	set mystring {}
 	set myid     {}
 	return
@@ -116,10 +145,14 @@ oo::class create atom::memory {
     ##      for efficiency. Plus alternate names.
 
     # Override base class. Efficient serialization.
-    method serialize {} { return $myid }
+    method serialize {} {
+	debug.atom/memory {}
+	return $myid
+    }
 
     # Override base class. Efficient replacing deserialization.
     method load {serial} {
+	debug.atom/memory {}
 	set myid $serial
 	set mystring {}
 	dict for {string id} $serial {
