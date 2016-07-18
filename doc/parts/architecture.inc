@@ -12,7 +12,7 @@ as shown below:
 
 [item] Packages marked with an unbroken blue border are fully public.
 
-[item] The topmost layer contains the various oublic storage backends.
+[item] The topmost layer contains the various public storage backends.
 
 [item] The other, supporting, layer contains only a single package,
 [package [vset PROJECT]], the base class for all others.

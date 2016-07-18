@@ -437,7 +437,7 @@ Packages marked with a dashed border are private\&.
 .IP \(bu
 Packages marked with an unbroken blue border are fully public\&.
 .IP \(bu
-The topmost layer contains the various oublic storage backends\&.
+The topmost layer contains the various public storage backends\&.
 .IP \(bu
 The other, supporting, layer contains only a single package,
 \fBatom\fR, the base class for all others\&.
