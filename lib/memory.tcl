@@ -65,7 +65,7 @@ oo::class create atom::memory {
 	if {![dict exists $myid $string]} {
 	    set id [dict size $myid]
 	    # Avoid conflicts with existing mappings. Such can occur
-	    # for deserialized mappings whiuch have holes.
+	    # for deserialized mappings which have holes.
 	    while {[dict exists $mystring $id]} {incr id}
 	    # Inlined 'map' without checks.
 	    dict set myid     $string $id
