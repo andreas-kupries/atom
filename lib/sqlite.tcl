@@ -1,7 +1,7 @@
 # -*- tcl -*-
 ## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## sqlite based atom storage i.e. string internement.
+## sqlite based atom storage i.e. string internment.
 ## Note, this does not use in-memory caching.
 ## If that is wanted see the cacher class.
 

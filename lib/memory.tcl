@@ -1,7 +1,7 @@
 # -*- tcl -*-
 ## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## In-memory atom storage i.e. string internement.
+## In-memory atom storage i.e. string internment.
 
 # @@ Meta Begin
 # Package atom::memory 1

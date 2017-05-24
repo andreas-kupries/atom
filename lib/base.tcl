@@ -1,7 +1,7 @@
 # -*- tcl -*-
 ## (c) 2013-2016 Andreas Kupries
 # # ## ### ##### ######## ############# #####################
-## Base class for atom storage i.e. string internement.
+## Base class for atom storage i.e. string internment.
 ##
 ## This class declares the API all actual classes have to
 ## implement. It also provides standard APIs for the

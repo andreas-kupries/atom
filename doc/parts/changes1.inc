@@ -16,7 +16,7 @@ The changes therefore describe the initial features of the system.
 
 [enum] The provided implementations store strings in an sqlite
        database, or in memory. One of the in-memory classes is written
-       to be a front-end cache for any other string internming class
+       to be a front-end cache for any other string interning class
        following the API declared here.
 
 [comment {- - -- --- ----- -------- ------------- ---------------------}]
