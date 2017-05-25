@@ -284,7 +284,7 @@ For availability please read \fIAtom - How To Get The Sources\fR\&.
 The audience of this document are anyone wishing to modify
 Atom in any way, shape, or form\&. This can be a maintainer
 fixing bugs, a developer adding functionality, or patching it to
-accommodate local cicumstances, etc\&.
+accommodate local circumstances, etc\&.
 .PP
 Please read
 .IP [1]
